@@ -17,20 +17,27 @@ import AppRoutes from './routes/AppRoutes';
 
 const AppContent = () => {
   const location = useLocation();
-  const showFooter = location.pathname !== '/artisans';
+  const isSellerPage = location.pathname.startsWith('/seller');
+  const showFooter = location.pathname !== '/artisans' && !isSellerPage;
 
   return (
     <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Navbar />
+      {!isSellerPage && <Navbar />}
       
       {/* Dynamic Sliding Shopping Cart drawer */}
-      <CartDrawer />
+      {!isSellerPage && <CartDrawer />}
       
       <main style={{ flex: 1 }}>
         <AppRoutes />
       </main>
       
       {showFooter && <Footer />}
+
+      {/* Global floating companion helper bot */}
+      {!isSellerPage && <KariGharBot />}
+
+      {/* Global voice navigation */}
+      {!isSellerPage && <VoiceNav />}
     </div>
   );
 };
@@ -65,12 +72,6 @@ const App = () => {
             />
             
             <AppContent />
-            
-            {/* Global floating companion helper bot */}
-            <KariGharBot />
-
-            {/* Global voice navigation */}
-            <VoiceNav />
 
           </CartProvider>
         </ProductProvider>
