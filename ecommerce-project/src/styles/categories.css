@@ -39,7 +39,7 @@
 }
 
 .filter-group-title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -80,7 +80,7 @@
 .price-slider-info {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   margin-top: 8px;
   color: var(--warm-charcoal);
@@ -117,7 +117,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--warm-charcoal-muted);
 }
 

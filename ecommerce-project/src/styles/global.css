@@ -13,7 +13,7 @@
   --forest-teal: hsl(174, 25%, 35%);           /* #43706B - KariGhar Assistant Panel */
   --forest-teal-light: hsl(174, 20%, 94%);
   --warm-charcoal: hsl(24, 15%, 15%);          /* #2D2522 - Primary Typography */
-  --warm-charcoal-muted: hsl(24, 10%, 45%);    /* Muted secondary body text */
+  --warm-charcoal-muted: hsl(24, 15%, 32%);    /* Muted secondary body text — darkened for readability */
   --white-pure: hsl(0, 0%, 100%);
   
   /* Layout & Utility Tokens */
@@ -40,7 +40,7 @@ body {
   background-color: var(--secondary-cream);
   color: var(--warm-charcoal);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -197,8 +197,8 @@ img {
 
 /* Badges styling */
 .badge-eco, .badge-handmade {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   padding: 4px 10px;
   border-radius: 20px;
   text-transform: uppercase;
@@ -235,3 +235,18 @@ img {
 }
 .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
 .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ===== GLOBAL READABILITY BOOST =====
+   Prevent any text from being too tiny or too faint sitewide */
+p, span, li, label, small, .product-card-category,
+.product-card-rating, .product-card-artisan-line,
+.filter-checkbox-label, .suggestion-details {
+  min-font-size: 13px; /* progressive enhancement */
+}
+
+/* Ensure muted helper text is always at least 13px */
+[style*="font-size: 12px"],
+[style*="font-size: 11px"],
+[style*="font-size: 10px"] {
+  font-size: 13px !important;
+}

@@ -416,7 +416,7 @@ const Seller = () => {
               <h3 className="serif-title" style={{ fontSize: '20px', color: 'var(--primary-terracotta)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FiMessageSquare style={{ color: 'var(--primary-terracotta)' }} /> Artisan Voice & Text Forums
               </h3>
-              <p style={{ fontSize: '12px', color: 'var(--warm-charcoal-muted)', marginBottom: '20px' }}>
+              <p style={{ fontSize: '14px', color: 'var(--warm-charcoal)', marginBottom: '20px' }}>
                 Connect client-side with cooperative circles across India. Speak, share advice, and record voice notes in the rooms!
               </p>
 
@@ -428,9 +428,9 @@ const Seller = () => {
                   <div className="forum-room-item">
                     <div>
                       <h4 style={{ fontSize: '15px', fontWeight: '700' }}>🏺 Kutch Pottery Circle</h4>
-                      <p style={{ fontSize: '12px', color: 'var(--warm-charcoal-muted)' }}>Cooperative discussions on clay firing & sourcing</p>
+                      <p style={{ fontSize: '14px', color: 'var(--warm-charcoal)', marginTop: '4px' }}>Cooperative discussions on clay firing & sourcing</p>
                     </div>
-                    <button onClick={() => setActiveRoom('pottery')} className="btn-primary" style={{ padding: '8px 14px', fontSize: '11px' }}>
+                    <button onClick={() => setActiveRoom('pottery')} className="btn-primary" style={{ padding: '8px 14px', fontSize: '13px' }}>
                       Join Room
                     </button>
                   </div>
@@ -439,9 +439,9 @@ const Seller = () => {
                   <div className="forum-room-item">
                     <div>
                       <h4 style={{ fontSize: '15px', fontWeight: '700' }}>🧵 Banarasi Saree Cooperative</h4>
-                      <p style={{ fontSize: '12px', color: 'var(--warm-charcoal-muted)' }}>Discussions on silk weights and Ajrakh prints</p>
+                      <p style={{ fontSize: '14px', color: 'var(--warm-charcoal)', marginTop: '4px' }}>Discussions on silk weights and Ajrakh prints</p>
                     </div>
-                    <button onClick={() => setActiveRoom('handloom')} className="btn-primary" style={{ padding: '8px 14px', fontSize: '11px' }}>
+                    <button onClick={() => setActiveRoom('handloom')} className="btn-primary" style={{ padding: '8px 14px', fontSize: '13px' }}>
                       Join Room
                     </button>
                   </div>

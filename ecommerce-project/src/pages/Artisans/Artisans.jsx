@@ -81,6 +81,13 @@ const Artisans = () => {
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [roomNameInput, setRoomNameInput] = useState('');
   const [roomCodeInput, setRoomCodeInput] = useState('');
+  const [isEditingTopic, setIsEditingTopic] = useState(false);
+  const [topicInput, setTopicInput] = useState('');
+
+  // Reset topic editor when changing rooms
+  useEffect(() => {
+    setIsEditingTopic(false);
+  }, [activeRoomId]);
 
   // Active room data pointer
   const activeRoom = rooms[activeRoomId] || rooms['pottery-help'];
@@ -262,8 +269,8 @@ const Artisans = () => {
                   </span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="font-semibold block text-[15px] leading-snug truncate">{room.name}</span>
-                  <span className={`text-xs block mt-1 ${isActive ? 'text-white/85' : 'text-on-surface-variant'}`}>
+                  <span className="font-bold block text-[17px] leading-snug truncate">{room.name}</span>
+                  <span className={`text-sm block mt-1 font-bold ${isActive ? 'text-white/90' : 'text-primary'}`}>
                     {room.activeCount} Artisans Active • Code: {room.code}
                   </span>
                 </div>
@@ -275,8 +282,8 @@ const Artisans = () => {
         {/* Tip of the Day Box */}
         <div className="mt-auto pt-4">
           <div className="bg-secondary-container/20 p-4 rounded-xl border border-secondary/20">
-            <p className="text-[10px] text-secondary font-bold uppercase tracking-wider mb-2">Tip of the Day</p>
-            <p className="font-body-md text-on-surface-variant italic text-sm leading-relaxed">
+            <p className="text-[13px] text-secondary font-bold uppercase tracking-wider mb-2">Tip of the Day</p>
+            <p className="font-body-md text-on-surface-variant italic text-base leading-relaxed">
               "{TIPS[tipIndex]}"
             </p>
           </div>
@@ -307,7 +314,7 @@ const Artisans = () => {
               >
                 <span className="material-symbols-outlined text-[36px] mb-2">add_circle</span>
                 <span className="font-bold text-[16px] leading-none">Create Room</span>
-                <span className="text-xs text-on-primary-container/85 text-center mt-2 leading-relaxed">Start a new live session and generate a room code.</span>
+                <span className="text-sm text-on-primary-container/90 text-center mt-2 leading-relaxed">Start a new live session and generate a room code.</span>
               </button>
 
               <button
@@ -316,7 +323,7 @@ const Artisans = () => {
               >
                 <span className="material-symbols-outlined text-[36px] mb-2">vpn_key</span>
                 <span className="font-bold text-[16px] text-on-surface leading-none">Join Room</span>
-                <span className="text-xs text-on-surface-variant text-center mt-2 leading-relaxed">Enter a 4-digit code to connect to an active room.</span>
+                <span className="text-sm text-on-surface-variant text-center mt-2 leading-relaxed">Enter a 4-digit code to connect to an active room.</span>
               </button>
             </div>
           </div>
@@ -328,7 +335,7 @@ const Artisans = () => {
           <div className="px-10 py-6 border-b border-outline-variant bg-white/50 backdrop-blur-sm flex justify-between items-center z-10 shrink-0">
             <div>
               <h1 className="font-headline-lg text-headline-lg text-primary font-bold">{activeRoom.name}</h1>
-              <p className="font-body-md text-on-surface-variant text-sm mt-1">{activeRoom.description} (Room Code: <strong>{activeRoom.code}</strong>)</p>
+              <p className="text-lg text-primary font-bold mt-1.5">{activeRoom.activeCount} Artisans Active</p>
             </div>
             <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full shrink-0">
               <span className="relative flex h-2.5 w-2.5">
@@ -341,6 +348,73 @@ const Artisans = () => {
 
           {/* Participant Grid */}
           <div className="flex-1 overflow-y-auto p-10 z-10">
+            {/* Topic Description Card */}
+            <div className="mb-8 p-5 bg-primary/5 border border-primary/20 rounded-2xl flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                <span className="material-symbols-outlined text-[28px]">{activeRoom.icon}</span>
+              </div>
+              
+              {isEditingTopic ? (
+                <div className="flex-1">
+                  <span className="text-[11px] font-bold tracking-wider uppercase text-primary/80 block mb-1">Edit Discussion Topic</span>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={topicInput}
+                      onChange={(e) => setTopicInput(e.target.value)}
+                      className="flex-1 px-3 py-1.5 bg-white border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-on-surface outline-none text-sm font-semibold"
+                      autoFocus
+                      required
+                    />
+                    <button
+                      onClick={() => {
+                        if (topicInput.trim()) {
+                          setRooms(prev => ({
+                            ...prev,
+                            [activeRoomId]: {
+                              ...prev[activeRoomId],
+                              description: topicInput.trim()
+                            }
+                          }));
+                          setIsEditingTopic(false);
+                          toast.success("Discussion topic updated!");
+                        } else {
+                          toast.error("Please enter a valid topic description.");
+                        }
+                      }}
+                      className="px-3.5 py-1.5 bg-primary text-white font-bold text-xs rounded-lg hover:brightness-95 transition-all shadow-md cursor-pointer shrink-0"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setIsEditingTopic(false)}
+                      className="px-3.5 py-1.5 bg-white border border-outline-variant text-on-surface-variant font-bold text-xs rounded-lg hover:bg-surface-container-low transition-all cursor-pointer shrink-0"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 flex justify-between items-center gap-4">
+                  <div>
+                    <span className="text-[11px] font-bold tracking-wider uppercase text-primary/80 block mb-0.5">Current Discussion Topic</span>
+                    <p className="text-on-surface font-semibold text-lg leading-relaxed">{activeRoom.description}</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setTopicInput(activeRoom.description);
+                      setIsEditingTopic(true);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-outline-variant hover:border-primary/40 text-on-surface-variant hover:text-primary rounded-lg font-bold text-xs transition-all shadow-sm shrink-0 cursor-pointer"
+                    title="Edit Discussion Topic"
+                  >
+                    <span className="material-symbols-outlined text-[16px] leading-none">edit</span>
+                    <span>Edit Topic</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
 
               {/* Active speaking state */}
