@@ -10,7 +10,7 @@ import '../../styles/home.css';
 const Home = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const { products } = useProducts();
+  const { products, getArtisanById } = useProducts();
 
   const [storyModalOpen, setStoryModalOpen] = useState(false);
 
@@ -56,7 +56,7 @@ const Home = () => {
 
           <div className="hero-visual-wrapper">
             <img 
-              src="https://images.unsplash.com/photo-1597484211029-f073d1015243?q=80&w=800&auto=format&fit=crop" 
+              src="/images/parvati-devi-weaver.png" 
               alt="Artisans Spinning Weaves" 
               className="hero-main-img"
             />
@@ -104,7 +104,7 @@ const Home = () => {
             
             {/* Handloom (Wider Card, matching design) */}
             <div className="category-tile" onClick={() => handleCategoryClick('Hand-loom Textiles')}>
-              <img src="https://images.unsplash.com/photo-1590736969955-71cb94801759?q=80&w=600&auto=format&fit=crop" alt="Handloom silk" />
+              <img src="/images/indigo-silk-stole.png" alt="Handloom silk" />
               <div className="category-tile-overlay">
                 <h3 className="category-tile-title">Handloom</h3>
                 <p className="category-tile-sub">Threads of heritage</p>
@@ -113,7 +113,7 @@ const Home = () => {
 
             {/* Pottery */}
             <div className="category-tile" onClick={() => handleCategoryClick('Pottery & Ceramics')}>
-              <img src="https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?q=80&w=400&auto=format&fit=crop" alt="Pottery clay" />
+              <img src="/images/earthen-sanctuary-vase.png" alt="Pottery clay" />
               <div className="category-tile-overlay">
                 <h3 className="category-tile-title">Pottery</h3>
                 <p className="category-tile-sub">Earth moulded by love</p>
@@ -122,7 +122,7 @@ const Home = () => {
 
             {/* Jewelry */}
             <div className="category-tile" onClick={() => handleCategoryClick('Metalwork (Dhokra)')}>
-              <img src="https://images.unsplash.com/photo-1606293926075-69a007f4e8b3?q=80&w=400&auto=format&fit=crop" alt="Jewelry castings" />
+              <img src="/images/dhokra-metal-nandi.png" alt="Jewelry castings" />
               <div className="category-tile-overlay">
                 <h3 className="category-tile-title">Jewelry</h3>
                 <p className="category-tile-sub">Adornments of history</p>
@@ -131,7 +131,7 @@ const Home = () => {
 
             {/* Paintings */}
             <div className="category-tile" onClick={() => handleCategoryClick('Wooden Carvings')}>
-              <img src="https://images.unsplash.com/photo-1598971861713-54ad16a7e72e?q=80&w=400&auto=format&fit=crop" alt="Paintings & Carvings" />
+              <img src="/images/carved-walnut-bowl.png" alt="Paintings & Carvings" />
               <div className="category-tile-overlay">
                 <h3 className="category-tile-title">Paintings</h3>
                 <p className="category-tile-sub">Colors of belief</p>
@@ -140,7 +140,7 @@ const Home = () => {
 
             {/* Embroidery */}
             <div className="category-tile" onClick={() => handleCategoryClick('Hand-loom Textiles')}>
-              <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=400&auto=format&fit=crop" alt="Embroidery detail" />
+              <img src="/images/pashmina-heritage-wrap.png" alt="Embroidery detail" />
               <div className="category-tile-overlay">
                 <h3 className="category-tile-title">Embroidery</h3>
                 <p className="category-tile-sub">Stitches of storytelling</p>
@@ -166,11 +166,14 @@ const Home = () => {
           </div>
 
           <div className="curation-grid">
-            {curationProducts.map(product => (
+            {curationProducts.map((product, idx) => {
+              const ribbonColors = ['ribbon-gold', 'ribbon-teal', 'ribbon-indigo', 'ribbon-wine'];
+              const artisan = getArtisanById ? getArtisanById(product.artisanId) : null;
+              return (
               <Link to={`/product/${product.id}`} key={product.id} className="product-card-container">
                 <div className="product-card-image-wrap">
                   <img src={product.images ? product.images[0] : ""} alt={product.title} />
-                  <span className="product-card-ribbon">Signature</span>
+                  <span className={`product-card-ribbon ${ribbonColors[idx % ribbonColors.length]}`}>Signature</span>
                   
                   {/* Quick add circular button */}
                   <button 
@@ -178,24 +181,28 @@ const Home = () => {
                     className="product-card-add-btn"
                     title="Add to Cart"
                   >
-                    <FiShoppingCart size={18} />
+                    <FiShoppingCart size={16} />
                   </button>
                 </div>
                 
                 <div className="product-card-details">
-                  <span className="product-card-category">{product.category}</span>
-                  <h4 className="product-card-title">{product.title}</h4>
-                  
-                  <div className="product-card-meta">
+                  <div className="product-card-title-row">
+                    <h4>{product.title}</h4>
                     <span className="product-card-price">{formatPrice(product.price)}</span>
-                    <span className="product-card-rating">
+                  </div>
+                  <div className="product-card-artisan-line">
+                    Artisan: {artisan ? artisan.name : 'KariGhar Collective'}<span>•</span>{product.district || 'India'}
+                  </div>
+                  <div className="product-card-rating-line">
+                    <span className="stars-container">
                       <FiStar style={{ fill: 'var(--gold-accent)', color: 'var(--gold-accent)' }} />
-                      <strong>{product.rating}</strong> ({product.reviewCount})
                     </span>
+                    <strong>{product.rating}</strong> ({product.reviewCount})
                   </div>
                 </div>
               </Link>
-            ))}
+            );
+            })}
           </div>
 
         </div>
@@ -207,7 +214,7 @@ const Home = () => {
           
           <div className="spotlight-img-frame">
             <img 
-              src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=600&auto=format&fit=crop" 
+              src="/images/parvati-devi-weaver.png" 
               alt="Artisan Parvati Devi" 
               className="spotlight-img"
             />
@@ -260,7 +267,7 @@ const Home = () => {
               
               <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginTop: '20px' }}>
                 <img 
-                  src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=300&auto=format&fit=crop" 
+                  src="/images/parvati-devi-weaver.png" 
                   alt="Parvati Devi Spinning" 
                   style={{ width: '220px', height: '220px', objectFit: 'cover', borderRadius: '12px', border: '1px solid var(--cream-border)' }}
                 />

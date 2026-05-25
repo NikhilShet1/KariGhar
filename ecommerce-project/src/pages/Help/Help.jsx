@@ -149,7 +149,7 @@ const Help = () => {
           {/* Community Success Story */}
           <div className="help-community-story-box">
             <img 
-              src="https://images.unsplash.com/photo-1565192647048-f997ded87958?q=80&w=600&auto=format&fit=crop" 
+              src="/images/meera-devi-potter.png" 
               alt="Pottery hands story" 
               className="help-community-story-img"
             />

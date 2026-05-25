@@ -15,7 +15,16 @@ export const ProductProvider = ({ children }) => {
     const storedReviews = localStorage.getItem('karighar_db_reviews');
 
     if (storedProducts) {
-      setProducts(JSON.parse(storedProducts));
+      const parsedProducts = JSON.parse(storedProducts);
+      const hasOldImages = parsedProducts && parsedProducts.some(p => 
+        p.images && p.images.some(img => typeof img === 'string' && img.includes('unsplash.com'))
+      );
+      if (hasOldImages) {
+        setProducts(INITIAL_PRODUCTS);
+        localStorage.setItem('karighar_db_products', JSON.stringify(INITIAL_PRODUCTS));
+      } else {
+        setProducts(parsedProducts);
+      }
     } else {
       setProducts(INITIAL_PRODUCTS);
       localStorage.setItem('karighar_db_products', JSON.stringify(INITIAL_PRODUCTS));
@@ -58,7 +67,7 @@ export const ProductProvider = ({ children }) => {
       id: newProdData.id || `p-${Date.now()}`,
       rating: 5.0,
       reviewCount: 0,
-      images: newProdData.images || ["https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?q=80&w=300"],
+      images: newProdData.images || ["/images/earthen-sanctuary-vase.png"],
       tags: newProdData.tags || ["Handmade", "Eco-friendly"],
       stockStatus: "In stock, ready to ship"
     };

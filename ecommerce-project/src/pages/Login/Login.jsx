@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FiCamera, FiArrowLeft, FiTrash2 } from 'react-icons/fi';
+import { FcGoogle } from 'react-icons/fc';
 import toast from 'react-hot-toast';
 import '../../styles/auth.css';
 
@@ -180,7 +181,7 @@ const Login = () => {
           </div>
           
           <img 
-            src="https://images.unsplash.com/photo-1506806732259-39c2d0268443?q=80&w=600&auto=format&fit=crop" 
+            src="/images/indigo-silk-stole.png" 
             alt="Weaving hands threads" 
             className="auth-visual-image"
           />
@@ -303,11 +304,7 @@ const Login = () => {
                 onClick={handleGoogleLogin}
                 className="btn-google-signon"
               >
-                <img 
-                  src="https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?q=80&w=100&auto=format&fit=crop" 
-                  alt="Google" 
-                  className="google-brand-img"
-                />
+                <FcGoogle size={20} style={{ marginRight: '10px' }} />
                 Continue with Google
               </button>
 
