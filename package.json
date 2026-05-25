@@ -1,0 +1,10 @@
+{
+  "name": "karighar-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix ecommerce-project",
+    "build": "npm run build --prefix ecommerce-project",
+    "preview": "npm run preview --prefix ecommerce-project"
+  }
+}

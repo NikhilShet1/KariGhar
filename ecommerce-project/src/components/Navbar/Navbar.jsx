@@ -101,7 +101,7 @@ const Navbar = () => {
               </NavLink>
             </li>
             <li>
-              <Link to="/help" className="nav-link">
+              <Link to="/artisans" className="nav-link">
                 Artisans
               </Link>
             </li>
