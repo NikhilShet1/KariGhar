@@ -11,6 +11,7 @@ import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar/Navbar';
 import CartDrawer from './components/Navbar/CartDrawer';
 import Footer from './components/Footer/Footer';
+import HearthBot from './components/HearthBot/HearthBot';
 import AppRoutes from './routes/AppRoutes';
 
 const App = () => {
@@ -53,6 +54,9 @@ const App = () => {
               </main>
               
               <Footer />
+              
+              {/* Global floating companion helper bot */}
+              <HearthBot />
             </div>
 
           </CartProvider>
