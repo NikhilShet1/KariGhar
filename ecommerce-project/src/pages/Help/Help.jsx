@@ -166,7 +166,7 @@ const Help = () => {
 
         </div>
 
-        {/* 2. RIGHT COLUMN: DYNAMIC HEARTH ASSISTANT CHATBOT */}
+        {/* 2. RIGHT COLUMN: DYNAMIC KARIGHAR ASSISTANT CHATBOT */}
         <div className="chatbot-panel-card">
           
           {/* Header Forest Teal bar */}
@@ -180,7 +180,7 @@ const Help = () => {
                 />
               </div>
               <div>
-                <h4 style={{ fontSize: '15px', color: 'var(--white-pure)', fontWeight: '600', fontFamily: 'var(--font-sans)' }}>Hearth Assistant</h4>
+                <h4 style={{ fontSize: '15px', color: 'var(--white-pure)', fontWeight: '600', fontFamily: 'var(--font-sans)' }}>KariGhar Assistant</h4>
                 <div style={{ fontSize: '11px', opacity: 0.9 }}>
                   <span className="chatbot-status-dot"></span>Always here to help
                 </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 // Context Providers
@@ -13,6 +13,26 @@ import CartDrawer from './components/Navbar/CartDrawer';
 import Footer from './components/Footer/Footer';
 import HearthBot from './components/HearthBot/HearthBot';
 import AppRoutes from './routes/AppRoutes';
+
+const AppContent = () => {
+  const location = useLocation();
+  const showFooter = location.pathname !== '/artisans';
+
+  return (
+    <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Navbar />
+      
+      {/* Dynamic Sliding Shopping Cart drawer */}
+      <CartDrawer />
+      
+      <main style={{ flex: 1 }}>
+        <AppRoutes />
+      </main>
+      
+      {showFooter && <Footer />}
+    </div>
+  );
+};
 
 const App = () => {
   return (
