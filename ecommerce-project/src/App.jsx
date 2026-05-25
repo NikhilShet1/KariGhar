@@ -63,21 +63,10 @@ const App = () => {
               }}
             />
             
-            <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-              <Navbar />
-              
-              {/* Dynamic Sliding Shopping Cart drawer */}
-              <CartDrawer />
-              
-              <main style={{ flex: 1 }}>
-                <AppRoutes />
-              </main>
-              
-              <Footer />
-              
-              {/* Global floating companion helper bot */}
-              <HearthBot />
-            </div>
+            <AppContent />
+            
+            {/* Global floating companion helper bot */}
+            <HearthBot />
 
           </CartProvider>
         </ProductProvider>

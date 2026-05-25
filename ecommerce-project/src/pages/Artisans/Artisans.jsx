@@ -67,7 +67,11 @@ const TIPS = [
 const Artisans = () => {
   const navigate = useNavigate();
   const [rooms, setRooms] = useState(INITIAL_ROOMS);
-  const [activeRoomId, setActiveRoomId] = useState('pottery-help');
+  const [activeRoomId, setActiveRoomId] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const roomParam = params.get('room');
+    return (roomParam && INITIAL_ROOMS[roomParam]) ? roomParam : null;
+  });
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [tipIndex, setTipIndex] = useState(0);
@@ -80,6 +84,15 @@ const Artisans = () => {
 
   // Active room data pointer
   const activeRoom = rooms[activeRoomId] || rooms['pottery-help'];
+
+  // Sync activeRoomId with URL search params
+  useEffect(() => {
+    if (activeRoomId) {
+      navigate(`/artisans?room=${activeRoomId}`, { replace: true });
+    } else {
+      navigate('/artisans', { replace: true });
+    }
+  }, [activeRoomId, navigate]);
 
   // Change tips on a timer
   useEffect(() => {
@@ -124,7 +137,7 @@ const Artisans = () => {
       return;
     }
 
-    const slug = roomNameInput.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slug = roomNameInput.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `room-${Date.now()}`;
     if (rooms[slug]) {
       toast.error("A room with that name already exists!");
       return;
@@ -197,7 +210,7 @@ const Artisans = () => {
   };
 
   return (
-    <div className="flex-1 flex overflow-hidden relative w-full" style={{ height: 'calc(100vh - 80px)', backgroundColor: 'var(--background)' }}>
+    <div className="flex-1 flex overflow-hidden relative w-full" style={{ height: 'calc(100vh - 80px)', backgroundColor: 'var(--secondary-cream)' }}>
       {/* Grain Overlay */}
       <div className="fixed inset-0 custom-grain z-50"></div>
 

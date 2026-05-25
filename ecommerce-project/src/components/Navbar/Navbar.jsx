@@ -96,9 +96,9 @@ const Navbar = () => {
               </NavLink>
             </li>
             <li>
-              <Link to="/help" className="nav-link">
+              <NavLink to="/artisans" onClick={() => setIsMobileMenuOpen(false)} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                 Artisans
-              </Link>
+              </NavLink>
             </li>
           </ul>
         </nav>
