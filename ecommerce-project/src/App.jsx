@@ -11,6 +11,7 @@ import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar/Navbar';
 import CartDrawer from './components/Navbar/CartDrawer';
 import Footer from './components/Footer/Footer';
+import HearthBot from './components/HearthBot/HearthBot';
 import AppRoutes from './routes/AppRoutes';
 
 const AppContent = () => {
@@ -62,7 +63,21 @@ const App = () => {
               }}
             />
             
-            <AppContent />
+            <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+              <Navbar />
+              
+              {/* Dynamic Sliding Shopping Cart drawer */}
+              <CartDrawer />
+              
+              <main style={{ flex: 1 }}>
+                <AppRoutes />
+              </main>
+              
+              <Footer />
+              
+              {/* Global floating companion helper bot */}
+              <HearthBot />
+            </div>
 
           </CartProvider>
         </ProductProvider>

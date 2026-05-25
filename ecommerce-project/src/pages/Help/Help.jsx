@@ -172,7 +172,13 @@ const Help = () => {
           {/* Header Forest Teal bar */}
           <div className="chatbot-header">
             <div className="chatbot-header-profile">
-              <div className="chatbot-avatar">❀</div>
+              <div className="chatbot-avatar" style={{ overflow: 'hidden', padding: 0 }}>
+                <img 
+                  src="/hearth-assistant-lady.png" 
+                  alt="Hearth Assistant Mascot" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              </div>
               <div>
                 <h4 style={{ fontSize: '15px', color: 'var(--white-pure)', fontWeight: '600', fontFamily: 'var(--font-sans)' }}>KariGhar Assistant</h4>
                 <div style={{ fontSize: '11px', opacity: 0.9 }}>
