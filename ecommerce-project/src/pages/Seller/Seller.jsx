@@ -14,10 +14,10 @@ import '../../styles/seller.css';
 
 const Seller = () => {
   const navigate = useNavigate();
-  const { user, isLoggedIn, demoLogin } = useAuth();
+  const { user, isLoggedIn } = useAuth();
   const { addProduct, products } = useProducts();
 
-  // If not signed in as a seller, prompt to quick-login as Meera Devi
+  // If not signed in as a seller, prompt to login
   useEffect(() => {
     if (isLoggedIn && user?.role !== 'Seller') {
       toast.error("Please switch to an Artisan account to access the dashboard.");
@@ -214,12 +214,6 @@ const Seller = () => {
     }, 2000);
   };
 
-  const handleSwitchToSeller = () => {
-    demoLogin('Seller');
-    toast.success("Welcome back to your KariGhar artisan portal, Meera!");
-    navigate('/seller');
-  };
-
   if (!isLoggedIn || user?.role !== 'Seller') {
     return (
       <div className="container text-center" style={{ padding: '80px 0', animation: 'fadeIn 0.6s ease-out' }}>
@@ -229,7 +223,6 @@ const Seller = () => {
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
           <Link to="/login" className="btn-primary">Sign In / Register</Link>
-          <button onClick={handleSwitchToSeller} className="btn-secondary">Quick Log In as Meera Devi</button>
         </div>
       </div>
     );

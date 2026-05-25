@@ -366,9 +366,9 @@ const Categories = () => {
 
       {/* 3. FLOATING CHAT BUBBLE ASSISTANT TRIGGER */}
       <div 
-        onClick={() => { navigate('/help'); toast.success("Opening Hearth Assistant Chatbot..."); }}
+        onClick={() => { navigate('/help'); toast.success("Opening KariGhar Assistant Chatbot..."); }}
         className="floating-chat-trigger" 
-        title="Open Hearth Assistant"
+        title="Open KariGhar Assistant"
       >
         <FiMessageCircle />
       </div>
