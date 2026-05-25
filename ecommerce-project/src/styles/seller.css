@@ -1,0 +1,101 @@
+/* KariGhar - Artisan Seller Dashboard Styles */
+
+.seller-hero {
+  padding: 50px 0;
+  background-color: var(--cream-card);
+  border-bottom: 1px solid var(--cream-border);
+  margin-bottom: 40px;
+}
+
+.seller-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr; /* Metrics & advice left, upload form right */
+  gap: 40px;
+  align-items: flex-start;
+  padding-bottom: 80px;
+}
+
+/* LEFT SIDE: METRICS & PRICING TOOL */
+.seller-left-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.seller-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.metric-card-box {
+  background: var(--white-pure);
+  border: 1px solid var(--cream-border);
+  border-radius: var(--border-radius-md);
+  padding: 20px 16px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+}
+
+.metric-num {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--primary-terracotta);
+  margin-bottom: 4px;
+}
+.metric-lbl {
+  font-size: 11px;
+  color: var(--warm-charcoal-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Pricing Tool wrapper */
+.pricing-calculator-card {
+  background: var(--white-pure);
+  border: 1px solid var(--cream-border);
+  border-radius: var(--border-radius-lg);
+  padding: 30px;
+  box-shadow: var(--shadow-card);
+  border-color: var(--gold-accent);
+}
+
+.pricing-calc-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.pricing-result-pane {
+  background: var(--primary-terracotta-light);
+  border: 1px dashed rgba(168, 63, 27, 0.2);
+  border-radius: var(--border-radius-sm);
+  padding: 16px;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+/* RIGHT SIDE: UPLOAD CREATION FORM */
+.seller-upload-card {
+  background: var(--white-pure);
+  border: 1px solid var(--cream-border);
+  border-radius: var(--border-radius-lg);
+  padding: 40px;
+  box-shadow: var(--shadow-premium);
+}
+
+.seller-listed-section {
+  border-top: 1px solid var(--cream-border);
+  padding-top: 60px;
+  margin-top: 20px;
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+  .seller-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
