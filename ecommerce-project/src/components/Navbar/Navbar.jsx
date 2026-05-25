@@ -7,18 +7,19 @@ import { formatPrice } from '../../utils/helpers';
 import '../../styles/navbar.css';
 
 // React Icons
-import { FiSearch, FiShoppingCart, FiGlobe, FiUser, FiLogOut } from 'react-icons/fi';
+import { FiSearch, FiShoppingCart, FiGlobe, FiUser, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { toggleCart, totalItemsCount } = useCart();
-  const { user, isLoggedIn, logout, demoLogin } = useAuth();
+  const { user, isLoggedIn, logout } = useAuth();
   const { products } = useProducts();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const searchContainerRef = useRef(null);
 
   // Filter products based on search query for real-time suggestions dropdown
@@ -67,12 +68,6 @@ const Navbar = () => {
     });
   };
 
-  const handleQuickLogin = () => {
-    demoLogin('Customer');
-    toast.success("Welcome back to the hearth, Ananya!");
-    navigate('/');
-  };
-
   return (
     <header className="header-nav">
       <div className="nav-container container">
@@ -84,24 +79,24 @@ const Navbar = () => {
 
         {/* Navigation Menu */}
         <nav>
-          <ul className="nav-menu">
+          <ul className={`nav-menu ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
             <li>
-              <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+              <NavLink to="/" onClick={() => setIsMobileMenuOpen(false)} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                 Our Story
               </NavLink>
             </li>
             <li>
-              <NavLink to="/collections" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+              <NavLink to="/collections" onClick={() => setIsMobileMenuOpen(false)} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                 Collections
               </NavLink>
             </li>
             <li>
-              <NavLink to="/help" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+              <NavLink to="/help" onClick={() => setIsMobileMenuOpen(false)} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                 Workshops
               </NavLink>
             </li>
             <li>
-              <Link to="/help" className="nav-link">
+              <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="nav-link">
                 Artisans
               </Link>
             </li>
@@ -189,11 +184,17 @@ const Navbar = () => {
               <Link to="/login" className="nav-btn-icon" title="Login / Register">
                 <FiUser />
               </Link>
-              <button className="nav-btn-demo" onClick={handleQuickLogin}>
-                Demo Login
-              </button>
             </div>
           )}
+
+          {/* Hamburger Menu Toggle (Mobile only) */}
+          <button 
+            className="nav-hamburger-btn" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle navigation menu"
+          >
+            {isMobileMenuOpen ? <FiX /> : <FiMenu />}
+          </button>
 
         </div>
 

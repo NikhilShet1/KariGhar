@@ -46,7 +46,7 @@ const Footer = () => {
 
           {/* Column 2: Platform */}
           <div>
-            <h4 className="footer-column-title">The Hearth</h4>
+            <h4 className="footer-column-title">KariGhar</h4>
             <ul className="footer-links-list">
               <li className="footer-link-item"><Link to="/help">Our Story</Link></li>
               <li className="footer-link-item"><Link to="/help">The Artisan Pledge</Link></li>

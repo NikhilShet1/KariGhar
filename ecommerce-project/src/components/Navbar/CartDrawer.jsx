@@ -89,7 +89,7 @@ const CartDrawer = () => {
         }}>
           <h3 style={{ fontSize: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <FiShoppingBag style={{ color: 'var(--primary-terracotta)' }} />
-            {checkoutStep === 'success' ? 'Order Complete' : 'Your Hearth Cart'}
+            {checkoutStep === 'success' ? 'Order Complete' : 'Your KariGhar Cart'}
           </h3>
           {checkoutStep !== 'loading' && (
             <button 
