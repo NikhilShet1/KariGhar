@@ -25,7 +25,7 @@ const Navbar = () => {
   // Filter products based on search query for real-time suggestions dropdown
   useEffect(() => {
     if (searchQuery.trim().length > 1) {
-      const filtered = products.filter(p => 
+      const filtered = products.filter(p =>
         p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.category.toLowerCase().includes(searchQuery.toLowerCase())
       ).slice(0, 5); // Max 5 suggestions
@@ -71,7 +71,7 @@ const Navbar = () => {
   return (
     <header className="header-nav">
       <div className="nav-container container">
-        
+
         {/* Logo */}
         <Link to="/" className="nav-logo">
           KariGhar<span>.</span>
@@ -96,7 +96,7 @@ const Navbar = () => {
               </NavLink>
             </li>
             <li>
-              <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="nav-link">
+              <Link to="/help" className="nav-link">
                 Artisans
               </Link>
             </li>
@@ -107,9 +107,9 @@ const Navbar = () => {
         <div className="nav-search-wrapper" ref={searchContainerRef}>
           <form onSubmit={handleSearchSubmit} className="nav-search-bar">
             <FiSearch size={18} />
-            <input 
-              type="text" 
-              placeholder="Search crafts..." 
+            <input
+              type="text"
+              placeholder="Search crafts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
@@ -122,16 +122,16 @@ const Navbar = () => {
               <div className="suggestion-header">Suggested Crafts</div>
               <div className="suggestion-list">
                 {suggestions.map(prod => (
-                  <div 
-                    key={prod.id} 
+                  <div
+                    key={prod.id}
                     className="suggestion-item"
                     onClick={() => handleSuggestionClick(prod.id)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <img 
-                      src={prod.images ? prod.images[0] : ""} 
-                      alt={prod.title} 
-                      className="suggestion-thumb" 
+                    <img
+                      src={prod.images ? prod.images[0] : ""}
+                      alt={prod.title}
+                      className="suggestion-thumb"
                     />
                     <div className="suggestion-details">
                       <div className="suggestion-title">{prod.title}</div>
@@ -146,7 +146,7 @@ const Navbar = () => {
 
         {/* Right Action Icons */}
         <div className="nav-actions">
-          
+
           {/* Language Toggle */}
           <button className="nav-btn-icon" onClick={handleLanguageToggle} title="Language Select">
             <FiGlobe />
@@ -163,16 +163,16 @@ const Navbar = () => {
           {/* Auth/Profile Toggle */}
           {isLoggedIn ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img 
-                src={user?.avatar} 
-                alt={user?.name} 
+              <img
+                src={user?.avatar}
+                alt={user?.name}
                 className="nav-profile-avatar"
                 onClick={() => navigate('/profile')}
                 title={`${user?.name} (${user?.role})`}
               />
-              <button 
-                className="nav-btn-icon" 
-                onClick={() => { logout(); toast.success("Successfully signed out."); navigate('/'); }} 
+              <button
+                className="nav-btn-icon"
+                onClick={() => { logout(); toast.success("Successfully signed out."); navigate('/'); }}
                 title="Sign Out"
                 style={{ fontSize: '18px', width: '32px', height: '32px' }}
               >
@@ -188,8 +188,8 @@ const Navbar = () => {
           )}
 
           {/* Hamburger Menu Toggle (Mobile only) */}
-          <button 
-            className="nav-hamburger-btn" 
+          <button
+            className="nav-hamburger-btn"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle navigation menu"
           >

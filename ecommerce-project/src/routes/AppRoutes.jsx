@@ -10,6 +10,7 @@ import Login from '../pages/Login/Login';
 import Signup from '../pages/Signup/Signup';
 import Seller from '../pages/Seller/Seller';
 import Profile from '../pages/Profile/Profile';
+import Artisans from '../pages/Artisans/Artisans';
 
 // Helper component to scroll to top on route change
 const ScrollToTop = () => {
@@ -35,6 +36,7 @@ const AppRoutes = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/seller" element={<Seller />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/artisans" element={<Artisans />} />
         
         {/* Fallback routing */}
         <Route path="*" element={<Navigate to="/" replace />} />

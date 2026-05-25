@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "dev:frontend": "npm run dev --prefix ecommerce-project",
+    "build:frontend": "npm run build --prefix ecommerce-project",
+    "preview:frontend": "npm run preview --prefix ecommerce-project"
   },
   "repository": {
     "type": "git",
