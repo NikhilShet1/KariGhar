@@ -120,9 +120,6 @@ const Categories = () => {
         <div className="container">
           <span className="hero-badge-tag">Collector Catalog</span>
           <h1 style={{ marginTop: '10px' }}>Curation of Craft</h1>
-          <p>
-            Discover timeless, rare pieces handcrafted by India's master artisans. Every object tells a story of heritage, patience, and meticulous skill.
-          </p>
         </div>
       </section>
 

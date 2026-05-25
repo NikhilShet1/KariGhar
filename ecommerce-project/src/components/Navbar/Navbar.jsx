@@ -91,11 +91,6 @@ const Navbar = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/help" onClick={() => setIsMobileMenuOpen(false)} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-                Workshops
-              </NavLink>
-            </li>
-            <li>
               <NavLink to="/artisans" onClick={() => setIsMobileMenuOpen(false)} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
                 Artisans
               </NavLink>

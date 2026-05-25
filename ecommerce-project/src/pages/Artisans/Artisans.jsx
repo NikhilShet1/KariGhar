@@ -38,9 +38,9 @@ const INITIAL_ROOMS = {
     code: '5678',
     participants: [
       { name: 'Basavaraj S.', isSpeaking: true, avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop' },
-      { name: 'Gowri M.', isSpeaking: false, avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=150&auto=format&fit=crop' },
+      { name: 'ashley king', isSpeaking: false, avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=150&auto=format&fit=crop' },
       { name: 'Chandru K.', isSpeaking: false, avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop' },
-      { name: 'Annapurna D.', isSpeaking: false, avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop' }
+      { name: 'raechel.', isSpeaking: false, avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop' }
     ]
   },
   'dyeing-techniques': {
@@ -50,7 +50,7 @@ const INITIAL_ROOMS = {
     activeCount: 6,
     code: '8765',
     participants: [
-      { name: 'Munni Begum', isSpeaking: true, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop' },
+      { name: 'ava.', isSpeaking: true, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop' },
       { name: 'Aslam F.', isSpeaking: false, avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=150&auto=format&fit=crop' },
       { name: 'Zarina S.', isSpeaking: false, avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=150&auto=format&fit=crop' }
     ]
@@ -165,7 +165,7 @@ const Artisans = () => {
     setActiveRoomId(slug);
     setRoomNameInput('');
     setShowCreateModal(false);
-    
+
     toast.success(`Room "${newRoom.name}" created! Code: ${generatedCode}`, {
       duration: 6000,
       icon: '🎉'
@@ -183,7 +183,7 @@ const Artisans = () => {
 
     // Search room database
     const matchingRoomEntry = Object.entries(rooms).find(([id, r]) => r.code === code);
-    
+
     if (matchingRoomEntry) {
       const [id, room] = matchingRoomEntry;
       setActiveRoomId(id);
@@ -223,15 +223,15 @@ const Artisans = () => {
 
         {/* Action Button Row */}
         <div className="flex flex-col gap-3 mb-2">
-          <button 
+          <button
             onClick={() => setShowCreateModal(true)}
             className="flex items-center justify-center gap-3 py-3.5 px-4 bg-primary-container text-on-primary-container rounded-xl shadow-lg transition-transform hover:scale-[1.02] text-left w-full cursor-pointer"
           >
             <span className="material-symbols-outlined text-[24px] leading-none">add_circle</span>
             <span className="font-semibold text-[15px] leading-none">Create Room</span>
           </button>
-          
-          <button 
+
+          <button
             onClick={() => setShowJoinModal(true)}
             className="flex items-center justify-center gap-3 py-3.5 px-4 bg-transparent border-2 border-primary text-primary rounded-xl transition-all hover:bg-primary/5 text-left w-full cursor-pointer"
           >
@@ -251,11 +251,10 @@ const Artisans = () => {
                   setActiveRoomId(id);
                   toast.success(`Switched to room: ${room.name}`);
                 }}
-                className={`flex items-center gap-4 p-3 rounded-xl transition-all duration-300 text-left border cursor-pointer ${
-                  isActive 
-                    ? 'bg-primary-container text-on-primary-container border-primary shadow-md' 
-                    : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest border-outline-variant'
-                }`}
+                className={`flex items-center gap-4 p-3 rounded-xl transition-all duration-300 text-left border cursor-pointer ${isActive
+                  ? 'bg-primary-container text-on-primary-container border-primary shadow-md'
+                  : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest border-outline-variant'
+                  }`}
               >
                 <div className={`p-2.5 rounded-lg flex items-center justify-center shrink-0 ${isActive ? 'bg-white/20' : 'bg-primary/10'}`}>
                   <span className={`material-symbols-outlined text-[28px] leading-none ${isActive ? 'text-white' : 'text-primary'}`}>
@@ -291,21 +290,18 @@ const Artisans = () => {
           {/* Subtle Decorative Backdrop Motifs */}
           <div className="absolute top-1/2 right-0 -translate-y-1/2 w-32 h-64 decorative-mandala opacity-5 pointer-events-none"></div>
           <div className="absolute bottom-1/4 left-0 w-32 h-64 decorative-mandala opacity-5 pointer-events-none"></div>
-          
+
           <div className="max-w-xl text-center flex flex-col items-center gap-6 bg-white/60 p-8 rounded-2xl border border-outline-variant/60 shadow-xl backdrop-blur-md relative">
             <div className="w-20 h-20 rounded-full bg-primary-container/10 flex items-center justify-center text-primary mb-2 ring-8 ring-primary/5">
               <span className="material-symbols-outlined text-[48px]">forum</span>
             </div>
-            
+
             <div>
               <h1 className="font-headline-lg text-headline-lg text-primary font-bold">KariGhar Community Hearth</h1>
-              <p className="font-body-md text-on-surface-variant text-base mt-2 leading-relaxed">
-                Connect with fellow master artisans across India. Share wheel-throwing tips, weaving patterns, natural dyeing recipes, and stories in real-time voice rooms.
-              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mt-4">
-              <button 
+              <button
                 onClick={() => setShowCreateModal(true)}
                 className="flex flex-col items-center justify-center p-6 bg-primary-container text-on-primary-container rounded-xl shadow-md transition-all hover:scale-[1.02] cursor-pointer border border-transparent"
               >
@@ -314,7 +310,7 @@ const Artisans = () => {
                 <span className="text-xs text-on-primary-container/85 text-center mt-2 leading-relaxed">Start a new live session and generate a room code.</span>
               </button>
 
-              <button 
+              <button
                 onClick={() => setShowJoinModal(true)}
                 className="flex flex-col items-center justify-center p-6 bg-white border border-outline-variant text-primary rounded-xl transition-all hover:scale-[1.02] hover:bg-primary/5 cursor-pointer shadow-sm"
               >
@@ -346,15 +342,15 @@ const Artisans = () => {
           {/* Participant Grid */}
           <div className="flex-1 overflow-y-auto p-10 z-10">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
-              
+
               {/* Active speaking state */}
               {isSpeaking && (
                 <div className="flex flex-col items-center text-center group">
                   <div className="relative mb-5">
-                    <img 
-                      alt="You" 
-                      className="w-32 h-32 md:w-36 md:h-36 rounded-full object-cover speaking-glow border-4 border-white shadow-xl" 
-                      src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150" 
+                    <img
+                      alt="You"
+                      className="w-32 h-32 md:w-36 md:h-36 rounded-full object-cover speaking-glow border-4 border-white shadow-xl"
+                      src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150"
                     />
                     <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-primary text-white px-3.5 py-1 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1 whitespace-nowrap z-30">
                       <span className="material-symbols-outlined text-[12px] leading-none">graphic_eq</span>
@@ -372,10 +368,10 @@ const Artisans = () => {
                 return (
                   <div key={idx} className={`flex flex-col items-center text-center group ${shouldShowAsSpeaking ? '' : 'opacity-85 hover:opacity-100 transition-opacity'}`}>
                     <div className="relative mb-5">
-                      <img 
-                        alt={person.name} 
-                        className={`w-32 h-32 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-[0_12px_24px_rgba(192,77,41,0.12)] transition-all duration-300 ${shouldShowAsSpeaking ? 'speaking-glow' : 'grayscale-[10%] group-hover:grayscale-0'}`} 
-                        src={person.avatar} 
+                      <img
+                        alt={person.name}
+                        className={`w-32 h-32 md:w-36 md:h-36 rounded-full object-cover border-4 border-white shadow-[0_12px_24px_rgba(192,77,41,0.12)] transition-all duration-300 ${shouldShowAsSpeaking ? 'speaking-glow' : 'grayscale-[10%] group-hover:grayscale-0'}`}
+                        src={person.avatar}
                       />
                       {shouldShowAsSpeaking && (
                         <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-primary text-white px-3.5 py-1 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1 whitespace-nowrap z-30">
@@ -404,16 +400,15 @@ const Artisans = () => {
 
           {/* Bottom Control Bar */}
           <div className="bg-surface-container-highest px-10 py-6 flex justify-between items-center shadow-[0_-10px_30px_rgba(0,0,0,0.05)] border-t border-outline-variant z-20 shrink-0">
-            
+
             {/* Mute/Unmute Toggle */}
             <div className="flex gap-4 items-center min-w-[200px]">
-              <button 
+              <button
                 onClick={handleMuteToggle}
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-md group border-2 cursor-pointer ${
-                  isMuted 
-                    ? 'bg-error text-white border-error shadow-red-200' 
-                    : 'bg-surface-container-low border-primary text-primary hover:bg-primary hover:text-white'
-                }`}
+                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-md group border-2 cursor-pointer ${isMuted
+                  ? 'bg-error text-white border-error shadow-red-200'
+                  : 'bg-surface-container-low border-primary text-primary hover:bg-primary hover:text-white'
+                  }`}
                 title={isMuted ? "Unmute Mic" : "Mute Mic"}
               >
                 <span className="material-symbols-outlined text-[28px] leading-none">
@@ -428,25 +423,23 @@ const Artisans = () => {
             {/* Push to Talk Button & Absolute Floating Label */}
             <div className="relative flex flex-col items-center">
               {/* Floating Pill */}
-              <div className={`absolute -top-14 font-bold tracking-[0.2em] uppercase text-[9px] px-3.5 py-1.5 rounded-full backdrop-blur-sm shadow-sm transition-all duration-300 border whitespace-nowrap ${
-                isSpeaking 
-                  ? 'text-error bg-red-50 border-red-200 animate-pulse' 
-                  : 'text-primary bg-white/95 border-outline-variant/40'
-              }`}>
+              <div className={`absolute -top-14 font-bold tracking-[0.2em] uppercase text-[9px] px-3.5 py-1.5 rounded-full backdrop-blur-sm shadow-sm transition-all duration-300 border whitespace-nowrap ${isSpeaking
+                ? 'text-error bg-red-50 border-red-200 animate-pulse'
+                : 'text-primary bg-white/95 border-outline-variant/40'
+                }`}>
                 {isSpeaking ? 'YOU ARE SPEAKING' : 'Hold to Speak'}
               </div>
 
               {/* PTT Button */}
-              <button 
+              <button
                 onMouseDown={handlePttDown}
                 onMouseUp={handlePttUp}
                 onTouchStart={handlePttDown}
                 onTouchEnd={handlePttUp}
-                className={`w-20 h-20 rounded-full flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 ring-8 ring-primary/5 cursor-pointer ${
-                  isSpeaking 
-                    ? 'bg-primary text-white scale-105 ring-primary/20' 
-                    : 'bg-primary-container text-on-primary-container'
-                }`}
+                className={`w-20 h-20 rounded-full flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 ring-8 ring-primary/5 cursor-pointer ${isSpeaking
+                  ? 'bg-primary text-white scale-105 ring-primary/20'
+                  : 'bg-primary-container text-on-primary-container'
+                  }`}
                 id="ptt-button"
               >
                 <span className="material-symbols-outlined text-[36px] leading-none" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -457,18 +450,18 @@ const Artisans = () => {
 
             {/* Right Action buttons */}
             <div className="flex gap-4 items-center min-w-[200px] justify-end">
-              <button 
+              <button
                 onClick={() => toast.success("Raised hand to speak!")}
-                className="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center hover:brightness-95 transition-all duration-300 shadow-md border border-secondary/20 cursor-pointer" 
+                className="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center hover:brightness-95 transition-all duration-300 shadow-md border border-secondary/20 cursor-pointer"
                 title="Raise Hand"
               >
                 <span className="material-symbols-outlined text-[28px] leading-none" style={{ fontVariationSettings: "'FILL' 1" }}>
                   back_hand
                 </span>
               </button>
-              <button 
+              <button
                 onClick={handleLeaveRoom}
-                className="px-6 h-14 rounded-full bg-error text-white flex items-center justify-center gap-2 hover:brightness-90 transition-all duration-300 shadow-lg font-semibold text-sm cursor-pointer" 
+                className="px-6 h-14 rounded-full bg-error text-white flex items-center justify-center gap-2 hover:brightness-90 transition-all duration-300 shadow-lg font-semibold text-sm cursor-pointer"
                 title="Leave Room"
               >
                 <span className="material-symbols-outlined text-[20px] leading-none">logout</span>
@@ -492,13 +485,13 @@ const Artisans = () => {
             <p className="text-on-surface-variant text-sm mb-5 leading-relaxed">
               Name your room. A secure 4-digit entry code will be generated automatically for participants.
             </p>
-            
+
             <form onSubmit={handleCreateSubmit}>
               <div className="flex flex-col gap-2 mb-6">
                 <label className="text-xs font-semibold uppercase tracking-wider text-outline text-left">Room Name</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. Weaving Circle" 
+                <input
+                  type="text"
+                  placeholder="e.g. Weaving Circle"
                   value={roomNameInput}
                   onChange={(e) => setRoomNameInput(e.target.value)}
                   className="w-full px-4 py-3 bg-surface-container-low border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-on-surface outline-none text-sm transition-all"
@@ -508,14 +501,14 @@ const Artisans = () => {
               </div>
 
               <div className="flex gap-3 justify-end">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => { setShowCreateModal(false); setRoomNameInput(''); }}
                   className="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-semibold text-sm hover:bg-surface-container-low transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="px-5 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:brightness-95 transition-all shadow-md cursor-pointer"
                 >
@@ -535,14 +528,14 @@ const Artisans = () => {
             <p className="text-on-surface-variant text-sm mb-5 leading-relaxed">
               Enter the 4-digit code provided by the room host to join their active voice stream.
             </p>
-            
+
             <form onSubmit={handleJoinSubmit}>
               <div className="flex flex-col gap-2 mb-6">
                 <label className="text-xs font-semibold uppercase tracking-wider text-outline text-left">4-Digit Code</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   maxLength={4}
-                  placeholder="e.g. 1234" 
+                  placeholder="e.g. 1234"
                   value={roomCodeInput}
                   onChange={(e) => setRoomCodeInput(e.target.value.replace(/\D/g, ''))} // only allow digits
                   className="w-full px-4 py-3 bg-surface-container-low border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-on-surface outline-none text-center font-mono text-lg tracking-widest transition-all"
@@ -552,14 +545,14 @@ const Artisans = () => {
               </div>
 
               <div className="flex gap-3 justify-end">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => { setShowJoinModal(false); setRoomCodeInput(''); }}
                   className="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-semibold text-sm hover:bg-surface-container-low transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="px-5 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:brightness-95 transition-all shadow-md cursor-pointer"
                 >

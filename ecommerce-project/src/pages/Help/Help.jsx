@@ -12,9 +12,6 @@ const Help = () => {
           <div>
             <span className="hero-badge-tag">Artisan Support Hub</span>
             <h1 className="support-hub-title" style={{ marginTop: '12px' }}>How can we help you create?</h1>
-            <p className="support-hub-desc" style={{ marginTop: '16px' }}>
-              Our Artisan Support Hub is designed to bridge the gap between tradition and the digital world. Whether you need help with fair-trade pricing, eco-packaging, or uploading your story, we are here.
-            </p>
           </div>
 
           {/* 4 support tiles */}

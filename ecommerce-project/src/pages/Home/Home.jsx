@@ -41,9 +41,6 @@ const Home = () => {
           <div className="hero-content">
             <span className="hero-badge-tag">Preserving Craft • Honoring Hands</span>
             <h1 className="hero-title">Empowering Indian Artisans Through Digital Commerce</h1>
-            <p className="hero-desc">
-              Direct from hands that honor tradition. Explore a curated sanctuary of authentic Indian craftsmanship, bridging ancient souls and modern living.
-            </p>
             <div className="hero-ctas">
               <button onClick={() => navigate('/collections')} className="btn-primary">
                 Explore Marketplace <FiArrowRight />
@@ -97,7 +94,6 @@ const Home = () => {
           <div className="categories-header text-center">
             <span className="hero-badge-tag" style={{ fontSize: '10px' }}>Traditional Categories</span>
             <h2 className="serif-title" style={{ marginTop: '10px' }}>The Artisan's Palette</h2>
-            <p style={{ color: 'var(--warm-charcoal-muted)', fontSize: '15px' }}>Inspired by traditional craft categories across rural India</p>
           </div>
 
           <div className="categories-grid">
@@ -158,7 +154,6 @@ const Home = () => {
             <div>
               <span className="hero-badge-tag" style={{ fontSize: '10px' }}>Handpicked Masterpieces</span>
               <h2 className="serif-title" style={{ marginTop: '10px' }}>Curation of the Month</h2>
-              <p style={{ color: 'var(--warm-charcoal-muted)', fontSize: '15px' }}>Signature pieces handpicked for exceptional quality and stories.</p>
             </div>
             <Link to="/collections" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: '600', color: 'var(--primary-terracotta)' }}>
               View All <FiArrowRight />

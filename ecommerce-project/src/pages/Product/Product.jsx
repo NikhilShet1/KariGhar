@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '../../context/ProductContext';
 import { useCart } from '../../context/CartContext';
 import { formatPrice } from '../../utils/helpers';
-import { FiStar, FiShoppingCart, FiHeart, FiX, FiCheck, FiInfo } from 'react-icons/fi';
+import { FiStar, FiShoppingCart, FiHeart, FiX, FiInfo } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import '../../styles/product.css';
 
@@ -189,93 +189,7 @@ const Product = () => {
 
       </section>
 
-      {/* MID SECTION: TIMELINE PROCESS & ARTISAN CARD */}
-      <section className="process-section">
-        <div className="process-header">
-          <span className="hero-badge-tag" style={{ fontSize: '10px' }}>The Legacy Journey</span>
-          <h2 className="serif-title" style={{ marginTop: '10px', fontSize: '32px' }}>Handmade Process</h2>
-          <p style={{ color: 'var(--warm-charcoal-muted)', fontSize: '15px' }}>"A direct conversation between the earth and the artisan hands."</p>
-        </div>
 
-        <div className="process-grid-layout">
-          
-          {/* Steps list column */}
-          <div className="process-steps-wrap">
-            
-            {product.process && product.process.length > 0 ? (
-              product.process.map(proc => (
-                <div key={proc.step} className="process-step-card">
-                  <div className="process-step-num">{proc.step}</div>
-                  <div>
-                    <h3 className="process-step-title">{proc.title}</h3>
-                    <p style={{ fontSize: '14px', color: 'var(--warm-charcoal-muted)' }}>{proc.desc}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="process-step-card">
-                <div className="process-step-num">1</div>
-                <div>
-                  <h3 className="process-step-title">Ethical Sourcing</h3>
-                  <p style={{ fontSize: '14px', color: 'var(--warm-charcoal-muted)' }}>Materials are harvested locally following seasonal rainfalls to protect regional ecosystems.</p>
-                </div>
-              </div>
-            )}
-
-            {/* Materials block detail */}
-            <div className="materials-block">
-              <h4 style={{ fontSize: '16px', color: 'var(--primary-terracotta)', marginBottom: '12px' }}>Materials Used:</h4>
-              <ul style={{ listStyle: 'inside disc', fontSize: '14px', color: 'var(--warm-charcoal)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {product.materials ? (
-                  product.materials.map((mat, idx) => <li key={idx}>{mat}</li>)
-                ) : (
-                  <li>100% Organic Local Craft Raw Materials</li>
-                )}
-              </ul>
-            </div>
-
-          </div>
-
-          {/* Artisan highlight mini-card column */}
-          {artisan && (
-            <div className="artisan-highlight-card">
-              <div className="artisan-header-meta">
-                <img src={artisan.photo} alt={artisan.name} className="artisan-avatar-img" />
-                <div>
-                  <h3 style={{ fontSize: '18px' }}>{artisan.name}</h3>
-                  <p style={{ fontSize: '12px', color: 'var(--warm-charcoal-muted)' }}>{artisan.role} • {artisan.location}</p>
-                </div>
-              </div>
-
-              <blockquote className="artisan-quote-text">
-                "{artisan.quote}"
-              </blockquote>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <FiCheck style={{ color: 'var(--primary-terracotta)' }} />
-                  <span>{artisan.experience}</span>
-                </div>
-                {artisan.badges.map(badge => (
-                  <div key={badge} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <FiCheck style={{ color: 'var(--primary-terracotta)' }} />
-                    <span>{badge}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button 
-                onClick={() => setArtisanModalOpen(true)}
-                className="btn-secondary" 
-                style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
-              >
-                View Artisan Story
-              </button>
-            </div>
-          )}
-
-        </div>
-      </section>
 
       {/* CROSS-SELLS: RELATED SHELF */}
       {relatedProducts.length > 0 && (
