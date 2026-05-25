@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FiSend, FiX, FiMessageCircle, FiBookOpen, FiHelpCircle, FiChevronRight } from 'react-icons/fi';
+import { FiSend, FiX, FiMessageCircle, FiBookOpen, FiHelpCircle, FiChevronRight, FiGlobe } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import './hearthbot.css';
 
@@ -11,6 +11,7 @@ const HearthBot = () => {
   const [showTooltip, setShowTooltip] = useState(true);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [language, setLanguage] = useState('English (India)');
   
   // Custom chat history
   const [messages, setMessages] = useState([
@@ -22,6 +23,25 @@ const HearthBot = () => {
   ]);
 
   const messagesEndRef = useRef(null);
+
+  const handleLanguageChange = () => {
+    const nextLang = language === 'English (India)' ? 'Hindi (हिन्दी)' : 'English (India)';
+    setLanguage(nextLang);
+    toast.success(`Language assistance changed to ${nextLang}`);
+    
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+      const ackMsg = {
+        id: `a-lang-${Date.now()}`,
+        sender: 'assistant',
+        text: nextLang === 'Hindi (हिन्दी)' 
+          ? "नमस्ते! अब मैं हिन्दी में आपकी सहायता के लिए तैयार हूँ। आप अपना प्रश्न पूछ सकते हैं। ❀"
+          : "Great! I am now ready to assist you in English (India). How can I help you today? ❀"
+      };
+      setMessages(prev => [...prev, ackMsg]);
+    }, 1000);
+  };
 
   // Auto-scroll to newest message
   useEffect(() => {
@@ -86,24 +106,37 @@ const HearthBot = () => {
       setIsTyping(false);
       let replyText = "";
       const query = text.toLowerCase();
+      const isHindi = language === 'Hindi (हिन्दी)';
 
-      // Smart responses matching the user's intent
-      if (query.includes('how to use') || query.includes('guide') || query.includes('problem') || query.includes('stuck') || query.includes('error')) {
-        replyText = "No worries! If you're looking to purchase, simply add a creation to your cart and click 'Place Order' in the slide-out drawer (we support mock payment validation!). If you're an artisan, use the Seller Dashboard to upload your products.";
-      } else if (query.includes('pricing') || query.includes('calculate') || query.includes('fair') || query.includes('wage')) {
-        replyText = "KariGhar guarantees a fair-trade living wage! On the Seller page, you can use our dynamic pricing calculator which factors in raw materials, packaging, and ₹150/hour crafting labor.";
-      } else if (query.includes('voice') || query.includes('audio') || query.includes('record')) {
-        replyText = "We support audio stories! Sellers can use the built-in browser microphone recorder inside 'Upload Creation' to add custom voice descriptions directly to their listed products.";
-      } else if (query.includes('whatsapp') || query.includes('chat') || query.includes('contact')) {
-        replyText = "Yes, you can converse directly with artisans! The WhatsApp click-to-chat generator on the Seller page formats and escapes numbers and pre-filled texts automatically.";
-      } else if (query.includes('ship') || query.includes('delivery') || query.includes('packaging')) {
-        replyText = "We pledge to use 100% organic biodegradable honeycomb cardboard and dried husks cushioning for fragile items like Bhuj pottery. Deliveries are fully tracked global packages.";
-      } else if (query.includes('login') || query.includes('otp') || query.includes('verify')) {
-        replyText = "To sign in, toggling between Customer/Seller, enter your phone and upload a photo. When prompted for an OTP code, type in our standard mock code: 1234.";
-      } else if (query.includes('artisan') || query.includes('meera') || query.includes('parvati')) {
-        replyText = "Our master weavers and potters include Parvati Devi (Ajrakh embroidery) and Meera Devi (Kutch terracotta clay). You can click on their stories on the Home or Product pages!";
+      if (isHindi) {
+        if (query.includes('pricing') || query.includes('calculate') || query.includes('fair') || query.includes('wage') || query.includes('मूल्य') || query.includes('गणना')) {
+          replyText = "कारीघर उचित मूल्य की गारंटी देता है! सेलर पेज पर आप मूल्य कैलकुलेटर का उपयोग कर सकते हैं जिसमें कच्चे माल और ₹150/घंटा श्रम शामिल है।";
+        } else if (query.includes('how to use') || query.includes('guide') || query.includes('problem') || query.includes('stuck') || query.includes('error') || query.includes('उपयोग') || query.includes('मदद')) {
+          replyText = "कोई चिंता नहीं! यदि आप खरीदना चाहते हैं, तो बस कार्ट में उत्पाद जोड़ें और 'प्लेस ऑर्डर' पर क्लिक करें। यदि आप एक कारीगर हैं, तो अपने उत्पाद अपलोड करने के लिए सेलर डैशबोर्ड का उपयोग करें।";
+        } else if (query.includes('ship') || query.includes('delivery') || query.includes('packaging') || query.includes('वितरण') || query.includes('भेजना')) {
+          replyText = "हम नाजुक वस्तुओं (जैसे भुज मिट्टी के बर्तन) के लिए 100% जैविक बायोडिग्रेडेबल हनीकॉम्ब कार्डबोर्ड का उपयोग करते हैं।";
+        } else {
+          replyText = "यह एक बहुत अच्छा प्रश्न है! मैं आपकी सहायता के लिए यहाँ हूँ। अधिक जानकारी के लिए आप हमारे सपोर्ट हब (Help) को भी देख सकते हैं।";
+        }
       } else {
-        replyText = "That's a great question! I'm here to ensure your KariGhar journey is seamless. You can also explore our official [Artisan Support Hub](/help) for deep-dive tutorials and Hindi assistance.";
+        // Smart responses matching the user's intent (English)
+        if (query.includes('how to use') || query.includes('guide') || query.includes('problem') || query.includes('stuck') || query.includes('error')) {
+          replyText = "No worries! If you're looking to purchase, simply add a creation to your cart and click 'Place Order' in the slide-out drawer (we support mock payment validation!). If you're an artisan, use the Seller Dashboard to upload your products.";
+        } else if (query.includes('pricing') || query.includes('calculate') || query.includes('fair') || query.includes('wage')) {
+          replyText = "KariGhar guarantees a fair-trade living wage! On the Seller page, you can use our dynamic pricing calculator which factors in raw materials, packaging, and ₹150/hour crafting labor.";
+        } else if (query.includes('voice') || query.includes('audio') || query.includes('record')) {
+          replyText = "We support audio stories! Sellers can use the built-in browser microphone recorder inside 'Upload Creation' to add custom voice descriptions directly to their listed products.";
+        } else if (query.includes('whatsapp') || query.includes('chat') || query.includes('contact')) {
+          replyText = "Yes, you can converse directly with artisans! The WhatsApp click-to-chat generator on the Seller page formats and escapes numbers and pre-filled texts automatically.";
+        } else if (query.includes('ship') || query.includes('delivery') || query.includes('packaging')) {
+          replyText = "We pledge to use 100% organic biodegradable honeycomb cardboard and dried husks cushioning for fragile items like Bhuj pottery. Deliveries are fully tracked global packages.";
+        } else if (query.includes('login') || query.includes('otp') || query.includes('verify')) {
+          replyText = "To sign in, toggling between Customer/Seller, enter your phone and upload a photo. When prompted for an OTP code, type in our standard mock code: 1234.";
+        } else if (query.includes('artisan') || query.includes('meera') || query.includes('parvati')) {
+          replyText = "Our master weavers and potters include Parvati Devi (Ajrakh embroidery) and Meera Devi (Kutch terracotta clay). You can click on their stories on the Home or Product pages!";
+        } else {
+          replyText = "That's a great question! I'm here to ensure your KariGhar journey is seamless. You can also explore our official [Artisan Support Hub](/help) for deep-dive tutorials and Hindi assistance.";
+        }
       }
 
       const assistantMsg = {
@@ -145,8 +178,8 @@ const HearthBot = () => {
             </div>
           )}
           
-          <button className="hearthbot-avatar-trigger" onClick={() => { setIsOpen(true); setShowTooltip(false); }} title="Open Heritage Companion">
-            <img src="/hearth-assistant-lady.png" alt="Hearth Assistant Standing Figurine" className="bot-lady-avatar-img" />
+          <button className="hearthbot-avatar-trigger" onClick={() => { setIsOpen(true); setShowTooltip(false); }} title="Open KariGhar Companion">
+            <img src="/hearth-assistant-lady.png" alt="KariGhar Assistant Standing Figurine" className="bot-lady-avatar-img" />
             <span className="bot-status-indicator pulse-green"></span>
           </button>
         </div>
@@ -163,18 +196,23 @@ const HearthBot = () => {
             <div className="hearthbot-header-bar">
               <div className="bot-profile-info">
                 <div className="bot-avatar-circle">
-                  <img src="/hearth-assistant-lady.png" alt="Hearth Lady Avatar" className="bot-header-img" />
+                  <img src="/hearth-assistant-lady.png" alt="KariGhar Lady Avatar" className="bot-header-img" />
                 </div>
                 <div>
-                  <h4 className="bot-name-title">Hearth Assistant</h4>
+                  <h4 className="bot-name-title">KariGhar Assistant</h4>
                   <div className="bot-active-status">
                     <span className="active-dot"></span> Online & Guided Support
                   </div>
                 </div>
               </div>
-              <button className="bot-close-btn" onClick={() => setIsOpen(false)} title="Minimize Companion">
-                <FiX size={18} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button onClick={handleLanguageChange} style={{ color: 'var(--white-pure)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: '600', background: 'rgba(255,255,255,0.15)', padding: '4px 8px', borderRadius: '20px', cursor: 'pointer', border: 'none' }} title="Change Language">
+                  <FiGlobe /> {language === 'English (India)' ? 'A/क' : 'En'}
+                </button>
+                <button className="bot-close-btn" onClick={() => setIsOpen(false)} title="Minimize Companion" style={{ cursor: 'pointer' }}>
+                  <FiX size={18} />
+                </button>
+              </div>
             </div>
 
             {/* Messages Track */}
@@ -253,7 +291,7 @@ const HearthBot = () => {
 
           {/* B. Standing Arched Figurine Niche (Visual Mascot showing she is presenting the chat panel!) */}
           <div className="hearthbot-mascot-niche">
-            <img src="/hearth-assistant-lady.png" alt="Hearth Assistant Mascot" className="bot-lady-avatar-img" />
+            <img src="/hearth-assistant-lady.png" alt="KariGhar Assistant Mascot" className="bot-lady-avatar-img" />
             <span className="bot-status-indicator pulse-green" style={{ top: '10px', right: '10px' }}></span>
           </div>
 
