@@ -2,15 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FiCamera, FiArrowLeft, FiTrash2 } from 'react-icons/fi';
+import { FcGoogle } from 'react-icons/fc';
 import toast from 'react-hot-toast';
 import '../../styles/auth.css';
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { 
-    isLoggedIn, 
-    login 
+  const {
+    isLoggedIn,
+    login
   } = useAuth();
 
   // Mode States
@@ -25,7 +26,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [avatar, setAvatar] = useState(null); // base64 string
-  
+
   const fileInputRef = useRef(null);
 
   // Redirect if already logged in
@@ -62,7 +63,7 @@ const Login = () => {
   // Form Submit: Login or Register
   const handleSubmitForm = (e) => {
     e.preventDefault();
-    
+
     // Quick validation
     if (isSignup && !fullName.trim()) {
       toast.error("Please enter your full name.");
@@ -94,10 +95,23 @@ const Login = () => {
     navigate(role === 'Seller' ? '/seller' : '/');
   };
 
+  const handleGoogleLogin = () => {
+    const userData = {
+      name: role === 'Seller' ? 'Meera Devi' : 'Ananya Gupta',
+      username: role === 'Seller' ? 'meera_devi' : 'ananya_g',
+      phone: role === 'Seller' ? '9876543210' : '9988776655',
+      role: role,
+      avatar: avatar
+    };
+    login(userData);
+    toast.success(`Signed in successfully with Google as a ${role}!`);
+    navigate(role === 'Seller' ? '/seller' : '/');
+  };
+
   return (
     <div className="auth-page-wrapper">
       <div className="auth-split-card">
-        
+
         {/* LEFT SIDE IMAGERY */}
         <div className="auth-visual-panel">
           <div>
@@ -106,13 +120,13 @@ const Login = () => {
               Step into a world where every stitch and stroke tells a story of ancient hands and modern hearts.
             </p>
           </div>
-          
-          <img 
-            src="https://images.unsplash.com/photo-1506806732259-39c2d0268443?q=80&w=600&auto=format&fit=crop" 
-            alt="Weaving hands threads" 
+
+          <img
+            src="/images/indigo-silk-stole.png"
+            alt="Weaving hands threads"
             className="auth-visual-image"
           />
-          
+
           <div style={{ fontSize: '11px', opacity: 0.7 }}>
             © 2026 KariGhar. Preserving Craft, Honoring Hands.
           </div>
@@ -120,7 +134,7 @@ const Login = () => {
 
         {/* RIGHT SIDE INTERACTIVE FORMS */}
         <div className="auth-form-panel">
-          
+
           <form onSubmit={handleSubmitForm}>
             <h2 className="auth-welcome-title">
               {isSignup ? 'Create Account' : 'Welcome Back'}
@@ -131,14 +145,14 @@ const Login = () => {
 
             {/* Customer / Seller Toggle */}
             <div className="auth-role-toggle-pill">
-              <button 
+              <button
                 type="button"
                 onClick={() => setRole('Customer')}
                 className={`auth-role-btn ${role === 'Customer' ? 'active' : 'inactive'}`}
               >
                 Customer
               </button>
-              <button 
+              <button
                 type="button"
                 onClick={() => setRole('Seller')}
                 className={`auth-role-btn ${role === 'Seller' ? 'active' : 'inactive'}`}
@@ -160,9 +174,9 @@ const Login = () => {
                 <span className="photo-upload-text">
                   {avatar ? 'Change Profile Photo' : 'Upload Profile Photo'}
                 </span>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
+                <input
+                  type="file"
+                  ref={fileInputRef}
                   onChange={handleImageChange}
                   accept="image/*"
                   style={{ display: 'none' }}
@@ -174,8 +188,8 @@ const Login = () => {
             {isSignup && (
               <div className="auth-input-group">
                 <label>Full Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="Enter your name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
@@ -188,8 +202,8 @@ const Login = () => {
             {/* Username */}
             <div className="auth-input-group">
               <label>Username</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Choose a username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -201,8 +215,8 @@ const Login = () => {
             {/* Password */}
             <div className="auth-input-group">
               <label>Password</label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -215,8 +229,8 @@ const Login = () => {
             {isSignup && (
               <div className="auth-input-group">
                 <label>Phone Number</label>
-                <input 
-                  type="tel" 
+                <input
+                  type="tel"
                   placeholder="e.g. 9876543210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -227,12 +241,25 @@ const Login = () => {
             )}
 
             {/* Submit button */}
-            <button 
-              type="submit" 
-              className="btn-primary" 
+            <button
+              type="submit"
+              className="btn-primary"
               style={{ width: '100%', justifyContent: 'center', padding: '14px', marginTop: '10px' }}
             >
               {isSignup ? 'Create Account' : 'Log In'}
+            </button>
+
+            {/* Divider OR CONNECT WITH */}
+            <div className="auth-divider-line">OR CONNECT WITH</div>
+
+            {/* Google Sign In */}
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="btn-google-signon"
+            >
+              <FcGoogle size={20} style={{ marginRight: '10px' }} />
+              Continue with Google
             </button>
 
             {/* Toggle Mode Link */}

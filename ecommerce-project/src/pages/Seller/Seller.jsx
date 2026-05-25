@@ -142,7 +142,7 @@ const Seller = () => {
       category: prodCategory,
       district: prodDistrict,
       description: prodDesc,
-      images: prodImg ? [prodImg] : ["https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?q=80&w=300"],
+      images: prodImg ? [prodImg] : ["/images/earthen-sanctuary-vase.png"],
       artisanId: user?.id || 'seller-meera',
       tags: ["Handmade", "Organic Materials"],
       voice_description_url: recordedVoiceUrl // implements products.voice_description_url database schema!

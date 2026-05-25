@@ -37,7 +37,7 @@ export const CartProvider = ({ children }) => {
         id: product.id,
         title: product.title,
         price: product.price,
-        image: product.images ? product.images[0] : "https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?q=80&w=300",
+        image: product.images ? product.images[0] : "/images/earthen-sanctuary-vase.png",
         subtitle: product.subtitle || "",
         quantity: quantity
       });
