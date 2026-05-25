@@ -19,7 +19,7 @@ const Seller = () => {
 
   // If not signed in as a seller, prompt to login
   useEffect(() => {
-    if (isLoggedIn && user?.role !== 'Seller') {
+    if (isLoggedIn && user?.role !== 'seller') {
       toast.error("Please switch to an Artisan account to access the dashboard.");
     }
   }, [isLoggedIn, user]);
@@ -214,7 +214,7 @@ const Seller = () => {
     }, 2000);
   };
 
-  if (!isLoggedIn || user?.role !== 'Seller') {
+  if (!isLoggedIn || user?.role !== 'seller') {
     return (
       <div className="container text-center" style={{ padding: '80px 0', animation: 'fadeIn 0.6s ease-out' }}>
         <h2 className="serif-title" style={{ fontSize: '32px', marginBottom: '16px' }}>Artisan Partner Panel</h2>

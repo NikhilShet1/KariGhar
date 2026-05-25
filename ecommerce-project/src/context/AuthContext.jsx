@@ -2,54 +2,60 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const TOKEN_KEY = 'karighar_token';
+const USER_KEY  = 'karighar_user';
 
-  // Initialize auth state from localStorage on startup
+export const AuthProvider = ({ children }) => {
+  const [user, setUser]           = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading]  = useState(true); // prevents flash of unauthenticated UI
+
+  // Rehydrate session from localStorage on app start
   useEffect(() => {
-    const storedUser = localStorage.getItem('karighar_user');
-    const storedAuth = localStorage.getItem('karighar_auth');
-    if (storedUser && storedAuth === 'true') {
+    const storedUser  = localStorage.getItem(USER_KEY);
+    const storedToken = localStorage.getItem(TOKEN_KEY);
+    if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
       setIsLoggedIn(true);
     }
+    setIsLoading(false);
   }, []);
 
-  // Simulates user authentication (Login and Registration)
-  const login = (userData) => {
-    const authenticatedUser = {
-      ...userData,
-      id: userData.id || `u-${Date.now()}`,
-      avatar: userData.avatar || (userData.role === 'Seller'
-        ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150&auto=format&fit=crop"
-        : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop")
+  /**
+   * Called after a successful API signup/login response.
+   * Persists the real Supabase session token + profile.
+   */
+  const login = (userData, accessToken) => {
+    const normalizedUser = {
+      id:             userData.id,
+      email:          userData.email,
+      name:           userData.full_name || userData.name,
+      role:           userData.role,
+      avatar:         userData.profile_pic_url || null,
+      phone_number:   userData.phone_number   || null,
+      village:        userData.village        || null,
+      district:       userData.district       || null,
+      state:          userData.state          || null,
     };
 
-    setUser(authenticatedUser);
+    setUser(normalizedUser);
     setIsLoggedIn(true);
-
-    // Persist in localStorage
-    localStorage.setItem('karighar_user', JSON.stringify(authenticatedUser));
-    localStorage.setItem('karighar_auth', 'true');
-    return authenticatedUser;
+    localStorage.setItem(USER_KEY,  JSON.stringify(normalizedUser));
+    if (accessToken) {
+      localStorage.setItem(TOKEN_KEY, accessToken);
+    }
+    return normalizedUser;
   };
 
-  // Logs the user out
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
-    localStorage.removeItem('karighar_user');
-    localStorage.removeItem('karighar_auth');
+    localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(TOKEN_KEY);
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      isLoggedIn,
-      login,
-      logout
-    }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -57,8 +63,6 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };

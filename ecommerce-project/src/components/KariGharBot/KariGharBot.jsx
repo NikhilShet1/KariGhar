@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiSend, FiX, FiMessageCircle, FiBookOpen, FiHelpCircle, FiChevronRight, FiGlobe } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import './hearthbot.css';
+import './karigharbot.css';
 
-const HearthBot = () => {
+const KariGharBot = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -86,8 +86,8 @@ const HearthBot = () => {
     ]);
   }, [location.pathname]);
 
-  // Handle Custom Question Submissions
-  const handleSendMessage = (textToSend) => {
+  // Handle Custom Question Submissions — calls Gemini API with website context
+  const handleSendMessage = async (textToSend) => {
     const text = textToSend || inputText;
     if (!text.trim()) return;
 
@@ -101,51 +101,37 @@ const HearthBot = () => {
     setInputText('');
     setIsTyping(true);
 
-    // Keyword matching & streaming answer simulator
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://localhost:5000/api/gemini/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          transcript: text,
+          page: location.pathname,
+          language: language,
+        }),
+      });
+
+      const data = await response.json();
+      const replyText = data.reply || "I'm sorry, I couldn't generate a response right now.";
+
       setIsTyping(false);
-      let replyText = "";
-      const query = text.toLowerCase();
-      const isHindi = language === 'Hindi (हिन्दी)';
-
-      if (isHindi) {
-        if (query.includes('pricing') || query.includes('calculate') || query.includes('fair') || query.includes('wage') || query.includes('मूल्य') || query.includes('गणना')) {
-          replyText = "कारीघर उचित मूल्य की गारंटी देता है! सेलर पेज पर आप मूल्य कैलकुलेटर का उपयोग कर सकते हैं जिसमें कच्चे माल और ₹150/घंटा श्रम शामिल है।";
-        } else if (query.includes('how to use') || query.includes('guide') || query.includes('problem') || query.includes('stuck') || query.includes('error') || query.includes('उपयोग') || query.includes('मदद')) {
-          replyText = "कोई चिंता नहीं! यदि आप खरीदना चाहते हैं, तो बस कार्ट में उत्पाद जोड़ें और 'प्लेस ऑर्डर' पर क्लिक करें। यदि आप एक कारीगर हैं, तो अपने उत्पाद अपलोड करने के लिए सेलर डैशबोर्ड का उपयोग करें।";
-        } else if (query.includes('ship') || query.includes('delivery') || query.includes('packaging') || query.includes('वितरण') || query.includes('भेजना')) {
-          replyText = "हम नाजुक वस्तुओं (जैसे भुज मिट्टी के बर्तन) के लिए 100% जैविक बायोडिग्रेडेबल हनीकॉम्ब कार्डबोर्ड का उपयोग करते हैं।";
-        } else {
-          replyText = "यह एक बहुत अच्छा प्रश्न है! मैं आपकी सहायता के लिए यहाँ हूँ। अधिक जानकारी के लिए आप हमारे सपोर्ट हब (Help) को भी देख सकते हैं।";
-        }
-      } else {
-        // Smart responses matching the user's intent (English)
-        if (query.includes('how to use') || query.includes('guide') || query.includes('problem') || query.includes('stuck') || query.includes('error')) {
-          replyText = "No worries! If you're looking to purchase, simply add a creation to your cart and click 'Place Order' in the slide-out drawer (we support mock payment validation!). If you're an artisan, use the Seller Dashboard to upload your products.";
-        } else if (query.includes('pricing') || query.includes('calculate') || query.includes('fair') || query.includes('wage')) {
-          replyText = "KariGhar guarantees a fair-trade living wage! On the Seller page, you can use our dynamic pricing calculator which factors in raw materials, packaging, and ₹150/hour crafting labor.";
-        } else if (query.includes('voice') || query.includes('audio') || query.includes('record')) {
-          replyText = "We support audio stories! Sellers can use the built-in browser microphone recorder inside 'Upload Creation' to add custom voice descriptions directly to their listed products.";
-        } else if (query.includes('whatsapp') || query.includes('chat') || query.includes('contact')) {
-          replyText = "Yes, you can converse directly with artisans! The WhatsApp click-to-chat generator on the Seller page formats and escapes numbers and pre-filled texts automatically.";
-        } else if (query.includes('ship') || query.includes('delivery') || query.includes('packaging')) {
-          replyText = "We pledge to use 100% organic biodegradable honeycomb cardboard and dried husks cushioning for fragile items like Bhuj pottery. Deliveries are fully tracked global packages.";
-        } else if (query.includes('login') || query.includes('otp') || query.includes('verify')) {
-          replyText = "To sign in, toggling between Customer/Seller, enter your phone and upload a photo. When prompted for an OTP code, type in our standard mock code: 1234.";
-        } else if (query.includes('artisan') || query.includes('meera') || query.includes('parvati')) {
-          replyText = "Our master weavers and potters include Parvati Devi (Ajrakh embroidery) and Meera Devi (Kutch terracotta clay). You can click on their stories on the Home or Product pages!";
-        } else {
-          replyText = "That's a great question! I'm here to ensure your KariGhar journey is seamless. You can also explore our official [Artisan Support Hub](/help) for deep-dive tutorials and Hindi assistance.";
-        }
-      }
-
       const assistantMsg = {
         id: `a-${Date.now()}`,
         sender: 'assistant',
         text: replyText
       };
       setMessages(prev => [...prev, assistantMsg]);
-    }, 1200);
+    } catch (err) {
+      console.error('Gemini chat error:', err);
+      setIsTyping(false);
+      const fallbackMsg = {
+        id: `a-${Date.now()}`,
+        sender: 'assistant',
+        text: "Namaste! I'm having trouble connecting right now. Please try again in a moment, or explore our Help page for FAQs. 🙏"
+      };
+      setMessages(prev => [...prev, fallbackMsg]);
+    }
   };
 
   const handleChipClick = (chipText) => {
@@ -166,20 +152,20 @@ const HearthBot = () => {
   };
 
   return (
-    <div className="hearthbot-wrapper">
+    <div className="karigharbot-wrapper">
       
       {/* 1. FLOATING Figurine TRIGGER (Closed State) */}
       {!isOpen && (
-        <div className="hearthbot-trigger-wrap">
+        <div className="karigharbot-trigger-wrap">
           {showTooltip && (
-            <div className="hearthbot-floating-tooltip">
+            <div className="karigharbot-floating-tooltip">
               <span className="tooltip-close" onClick={(e) => { e.stopPropagation(); setShowTooltip(false); }}>&times;</span>
               <strong>Facing any problem?</strong> Tap me, I'm here to guide you! ❀
             </div>
           )}
           
-          <button className="hearthbot-avatar-trigger" onClick={() => { setIsOpen(true); setShowTooltip(false); }} title="Open KariGhar Companion">
-            <img src="/hearth-assistant-lady.png" alt="KariGhar Assistant Standing Figurine" className="bot-lady-avatar-img" />
+          <button className="karigharbot-avatar-trigger" onClick={() => { setIsOpen(true); setShowTooltip(false); }} title="Open KariGhar Companion">
+            <img src="/karighar-assistant-lady.png" alt="KariGhar Assistant Standing Figurine" className="bot-lady-avatar-img" />
             <span className="bot-status-indicator pulse-green"></span>
           </button>
         </div>
@@ -187,16 +173,16 @@ const HearthBot = () => {
 
       {/* 2. CHAT OVERLAY WINDOW + STANDING MASCOT (Open State) */}
       {isOpen && (
-        <div className="hearthbot-active-container">
+        <div className="karigharbot-active-container">
           
           {/* A. Chat Window Card */}
-          <div className="hearthbot-chat-window animate-slide-up">
+          <div className="karigharbot-chat-window animate-slide-up">
             
             {/* Header */}
-            <div className="hearthbot-header-bar">
+            <div className="karigharbot-header-bar">
               <div className="bot-profile-info">
                 <div className="bot-avatar-circle">
-                  <img src="/hearth-assistant-lady.png" alt="KariGhar Lady Avatar" className="bot-header-img" />
+                  <img src="/karighar-assistant-lady.png" alt="KariGhar Lady Avatar" className="bot-header-img" />
                 </div>
                 <div>
                   <h4 className="bot-name-title">KariGhar Assistant</h4>
@@ -216,9 +202,9 @@ const HearthBot = () => {
             </div>
 
             {/* Messages Track */}
-            <div className="hearthbot-messages-track">
+            <div className="karigharbot-messages-track">
               {messages.map(msg => (
-                <div key={msg.id} className={`hearth-bubble ${msg.sender}`}>
+                <div key={msg.id} className={`karighar-bubble ${msg.sender}`}>
                   {msg.text.includes('[') ? (
                     // Simple markdown link parser for specific help button
                     <span>
@@ -238,7 +224,7 @@ const HearthBot = () => {
               ))}
 
               {isTyping && (
-                <div className="hearth-typing-indicator hearth-bubble assistant">
+                <div className="karighar-typing-indicator karighar-bubble assistant">
                   <span></span>
                   <span></span>
                   <span></span>
@@ -249,7 +235,7 @@ const HearthBot = () => {
             </div>
 
             {/* Suggestion action chips */}
-            <div className="hearthbot-chips-container">
+            <div className="karigharbot-chips-container">
               {getPageSuggestChips().map((chip, i) => (
                 <button 
                   key={i} 
@@ -262,7 +248,7 @@ const HearthBot = () => {
             </div>
 
             {/* Input text form */}
-            <div className="hearthbot-input-bar">
+            <div className="karigharbot-input-bar">
               <input 
                 type="text" 
                 placeholder="Ask a question..."
@@ -290,8 +276,8 @@ const HearthBot = () => {
           </div>
 
           {/* B. Standing Arched Figurine Niche (Visual Mascot showing she is presenting the chat panel!) */}
-          <div className="hearthbot-mascot-niche">
-            <img src="/hearth-assistant-lady.png" alt="KariGhar Assistant Mascot" className="bot-lady-avatar-img" />
+          <div className="karigharbot-mascot-niche">
+            <img src="/karighar-assistant-lady.png" alt="KariGhar Assistant Mascot" className="bot-lady-avatar-img" />
             <span className="bot-status-indicator pulse-green" style={{ top: '10px', right: '10px' }}></span>
           </div>
 
@@ -302,4 +288,4 @@ const HearthBot = () => {
   );
 };
 
-export default HearthBot;
+export default KariGharBot;

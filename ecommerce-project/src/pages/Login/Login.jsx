@@ -1,111 +1,103 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FiCamera, FiArrowLeft, FiTrash2 } from 'react-icons/fi';
+import { authService } from '../../services/authService';
+import { FiCamera } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 import toast from 'react-hot-toast';
 import '../../styles/auth.css';
 
 const Login = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const {
-    isLoggedIn,
-    login
-  } = useAuth();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const { isLoggedIn, isLoading, login } = useAuth();
 
-  // Mode States
-  const queryParams = new URLSearchParams(location.search);
+  // Mode
+  const queryParams   = new URLSearchParams(location.search);
   const initialSignup = queryParams.get('signup') === 'true';
   const [isSignup, setIsSignup] = useState(initialSignup);
-  const [role, setRole] = useState('Customer'); // 'Customer' | 'Seller'
+  const [role, setRole]         = useState('Customer'); // 'Customer' | 'Seller'
 
-  // Input States
-  const [fullName, setFullName] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [avatar, setAvatar] = useState(null); // base64 string
+  // Form fields
+  const [fullName,  setFullName]  = useState('');
+  const [email,     setEmail]     = useState('');
+  const [password,  setPassword]  = useState('');
+  const [phone,     setPhone]     = useState('');
+  const [avatar,    setAvatar]    = useState(null); // base64 preview only
+  const [submitting, setSubmitting] = useState(false);
 
   const fileInputRef = useRef(null);
 
-  // Redirect if already logged in
+  // Redirect if already authenticated
   useEffect(() => {
-    if (isLoggedIn) {
-      navigate('/');
-    }
-  }, [isLoggedIn, navigate]);
+    if (!isLoading && isLoggedIn) navigate('/');
+  }, [isLoggedIn, isLoading, navigate]);
 
-  // Image upload with FileReader preview
+  // Image upload preview
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (file.size > 2000000) {
-        toast.error("File is too large. Please select an image under 2MB.");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatar(reader.result);
-        toast.success("Profile photo uploaded!");
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    if (file.size > 2000000) {
+      toast.error('File is too large. Please select an image under 2MB.');
+      return;
     }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatar(reader.result);
+      toast.success('Profile photo uploaded!');
+    };
+    reader.readAsDataURL(file);
   };
 
-  // Trigger file upload dialog
-  const triggerImagePicker = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  const triggerImagePicker = () => fileInputRef.current?.click();
 
-  // Form Submit: Login or Register
-  const handleSubmitForm = (e) => {
+  // ── FORM SUBMIT ─────────────────────────────────────────────────────────────
+  const handleSubmitForm = async (e) => {
     e.preventDefault();
 
-    // Quick validation
+    // Validation
     if (isSignup && !fullName.trim()) {
-      toast.error("Please enter your full name.");
-      return;
+      toast.error('Please enter your full name.'); return;
     }
-    if (!username.trim() || username.length < 3) {
-      toast.error("Please enter a valid username (min 3 characters).");
-      return;
+    if (!email.trim() || !email.includes('@')) {
+      toast.error('Please enter a valid email address.'); return;
     }
-    if (!password.trim() || password.length < 4) {
-      toast.error("Please enter a valid password (min 4 characters).");
-      return;
+    if (!password.trim() || password.length < 6) {
+      toast.error('Password must be at least 6 characters.'); return;
     }
     if (isSignup && (!phone.trim() || phone.length < 10)) {
-      toast.error("Please enter a valid phone number (min 10 digits).");
-      return;
+      toast.error('Please enter a valid phone number (min 10 digits).'); return;
     }
 
-    const userData = {
-      name: isSignup ? fullName : (role === 'Seller' ? 'Meera Devi' : 'Ananya Gupta'),
-      username: username,
-      phone: isSignup ? phone : (role === 'Seller' ? '9876543210' : '9988776655'),
-      role: role,
-      avatar: avatar
-    };
+    setSubmitting(true);
 
-    login(userData);
-    toast.success(role === 'Seller' ? "Artisan dashboard unlocked!" : "Successfully signed in!");
-    navigate(role === 'Seller' ? '/seller' : '/');
-  };
+    try {
+      if (isSignup) {
+        // ── SIGNUP ───────────────────────────────────────────────────────────
+        const payload = {
+          email,
+          password,
+          full_name:    fullName,
+          role:         role === 'Seller' ? 'seller' : 'buyer',
+          phone_number: phone || undefined,
+        };
+        const data = await authService.signup(payload);
+        login(data.user, data.session?.access_token);
+        toast.success('Account created! Welcome to KariGhar.');
+        navigate(role === 'Seller' ? '/seller' : '/');
 
-  const handleGoogleLogin = () => {
-    const userData = {
-      name: role === 'Seller' ? 'Meera Devi' : 'Ananya Gupta',
-      username: role === 'Seller' ? 'meera_devi' : 'ananya_g',
-      phone: role === 'Seller' ? '9876543210' : '9988776655',
-      role: role,
-      avatar: avatar
-    };
-    login(userData);
-    toast.success(`Signed in successfully with Google as a ${role}!`);
-    navigate(role === 'Seller' ? '/seller' : '/');
+      } else {
+        // ── LOGIN ────────────────────────────────────────────────────────────
+        const data = await authService.login({ email, password });
+        login(data.user, data.session?.access_token);
+        toast.success(`Welcome back, ${data.user.full_name || data.user.email}!`);
+        navigate(data.user.role === 'seller' ? '/seller' : '/');
+      }
+    } catch (err) {
+      toast.error(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -132,9 +124,8 @@ const Login = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE INTERACTIVE FORMS */}
+        {/* RIGHT SIDE FORM */}
         <div className="auth-form-panel">
-
           <form onSubmit={handleSubmitForm}>
             <h2 className="auth-welcome-title">
               {isSignup ? 'Create Account' : 'Welcome Back'}
@@ -145,134 +136,99 @@ const Login = () => {
 
             {/* Customer / Seller Toggle */}
             <div className="auth-role-toggle-pill">
-              <button
-                type="button"
-                onClick={() => setRole('Customer')}
-                className={`auth-role-btn ${role === 'Customer' ? 'active' : 'inactive'}`}
-              >
+              <button type="button" onClick={() => setRole('Customer')}
+                className={`auth-role-btn ${role === 'Customer' ? 'active' : 'inactive'}`}>
                 Customer
               </button>
-              <button
-                type="button"
-                onClick={() => setRole('Seller')}
-                className={`auth-role-btn ${role === 'Seller' ? 'active' : 'inactive'}`}
-              >
+              <button type="button" onClick={() => setRole('Seller')}
+                className={`auth-role-btn ${role === 'Seller' ? 'active' : 'inactive'}`}>
                 Seller Artisan
               </button>
             </div>
 
-            {/* Photo Upload preview (Signup Mode only) */}
+            {/* Photo Upload (Signup only) */}
             {isSignup && (
               <div className="auth-photo-uploader" onClick={triggerImagePicker}>
                 <div className="photo-upload-circle">
-                  {avatar ? (
-                    <img src={avatar} alt="Avatar preview" />
-                  ) : (
-                    <FiCamera size={26} />
-                  )}
+                  {avatar ? <img src={avatar} alt="Avatar preview" /> : <FiCamera size={26} />}
                 </div>
                 <span className="photo-upload-text">
                   {avatar ? 'Change Profile Photo' : 'Upload Profile Photo'}
                 </span>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageChange}
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                />
+                <input type="file" ref={fileInputRef} onChange={handleImageChange}
+                  accept="image/*" style={{ display: 'none' }} />
               </div>
             )}
 
-            {/* Full Name (Signup Mode only) */}
+            {/* Full Name (Signup only) */}
             {isSignup && (
               <div className="auth-input-group">
                 <label>Full Name</label>
-                <input
-                  type="text"
-                  placeholder="Enter your name"
-                  value={fullName}
+                <input type="text" placeholder="Enter your name" value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="auth-input-field"
-                  required
-                />
+                  className="auth-input-field" required />
               </div>
             )}
 
-            {/* Username */}
+            {/* Email */}
             <div className="auth-input-group">
-              <label>Username</label>
-              <input
-                type="text"
-                placeholder="Choose a username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="auth-input-field"
-                required
-              />
+              <label>Email Address</label>
+              <input type="email" placeholder="you@example.com" value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="auth-input-field" required />
             </div>
 
             {/* Password */}
             <div className="auth-input-group">
               <label>Password</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
+              <input type="password" placeholder="••••••••" value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="auth-input-field"
-                required
-              />
+                className="auth-input-field" required />
             </div>
 
-            {/* Phone Number (Signup Mode only) */}
+            {/* Phone (Signup only) */}
             {isSignup && (
               <div className="auth-input-group">
                 <label>Phone Number</label>
-                <input
-                  type="tel"
-                  placeholder="e.g. 9876543210"
-                  value={phone}
+                <input type="tel" placeholder="e.g. 9876543210" value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="auth-input-field"
-                  required
-                />
+                  className="auth-input-field" required />
               </div>
             )}
 
-            {/* Submit button */}
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center', padding: '14px', marginTop: '10px' }}
-            >
-              {isSignup ? 'Create Account' : 'Log In'}
+            {/* Submit */}
+            <button type="submit" className="btn-primary" disabled={submitting}
+              style={{ width: '100%', justifyContent: 'center', padding: '14px', marginTop: '10px', opacity: submitting ? 0.7 : 1 }}>
+              {submitting
+                ? (isSignup ? 'Creating Account…' : 'Signing In…')
+                : (isSignup ? 'Create Account' : 'Log In')}
             </button>
 
-            {/* Divider OR CONNECT WITH */}
             <div className="auth-divider-line">OR CONNECT WITH</div>
 
-            {/* Google Sign In */}
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="btn-google-signon"
-            >
+            {/* Google (UI only — no Supabase OAuth yet) */}
+            <button type="button" className="btn-google-signon"
+              onClick={() => toast('Google sign-in coming soon!', { icon: '🚀' })}>
               <FcGoogle size={20} style={{ marginRight: '10px' }} />
               Continue with Google
             </button>
 
-            {/* Toggle Mode Link */}
+            {/* Toggle Mode */}
             <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '13px', color: 'var(--warm-charcoal-muted)' }}>
               {isSignup ? (
-                <span>Already have an account? <button type="button" onClick={() => setIsSignup(false)} style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>Log In</button></span>
+                <span>Already have an account?{' '}
+                  <button type="button" onClick={() => setIsSignup(false)}
+                    style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>Log In</button>
+                </span>
               ) : (
-                <span>Don't have an account? <button type="button" onClick={() => setIsSignup(true)} style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>Sign Up</button></span>
+                <span>Don't have an account?{' '}
+                  <button type="button" onClick={() => setIsSignup(true)}
+                    style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>Sign Up</button>
+                </span>
               )}
             </div>
 
           </form>
-
         </div>
 
       </div>

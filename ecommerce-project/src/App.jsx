@@ -11,7 +11,8 @@ import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar/Navbar';
 import CartDrawer from './components/Navbar/CartDrawer';
 import Footer from './components/Footer/Footer';
-import HearthBot from './components/HearthBot/HearthBot';
+import KariGharBot from './components/KariGharBot/KariGharBot';
+import VoiceNav from './components/VoiceNav/VoiceNav';
 import AppRoutes from './routes/AppRoutes';
 
 const AppContent = () => {
@@ -66,7 +67,10 @@ const App = () => {
             <AppContent />
             
             {/* Global floating companion helper bot */}
-            <HearthBot />
+            <KariGharBot />
+
+            {/* Global voice navigation */}
+            <VoiceNav />
 
           </CartProvider>
         </ProductProvider>
