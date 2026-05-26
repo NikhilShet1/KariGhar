@@ -1,12 +1,13 @@
-const { supabase, supabaseAdmin } = require('../config/supabase');
+const { supabaseAdmin } = require('../config/supabase');
+const asyncHandler = require('../utils/asyncHandler');
 
 /**
  * POST /api/orders
  * Protected — buyers only.
  * Body: { seller_id, items: [{ product_id, quantity, price }] }
- * Atomically creates the order + order_items + decrements stock.
+ * Atomically validates stock, creates the order + order_items, and decrements stock.
  */
-const placeOrder = async (req, res, next) => {
+const placeOrder = asyncHandler(async (req, res, next) => {
   const { seller_id, items } = req.body;
 
   if (!seller_id || !Array.isArray(items) || items.length === 0) {
@@ -14,9 +15,43 @@ const placeOrder = async (req, res, next) => {
     return next(new Error('seller_id and at least one item are required'));
   }
 
-  const total_amount = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  // 1. Fetch current stock for all items
+  const productIds = items.map(i => i.product_id);
+  const { data: productsData, error: productsError } = await supabaseAdmin
+    .from('products')
+    .select('id, title, stock, is_available')
+    .in('id', productIds);
 
-  // 1. Create the order row
+  if (productsError || !productsData) {
+    res.status(500);
+    return next(new Error(`Failed to fetch product stocks: ${productsError?.message}`));
+  }
+
+  // Map for easy lookup
+  const productMap = {};
+  for (const p of productsData) {
+    productMap[p.id] = p;
+  }
+
+  // Validate stock and availability
+  for (const item of items) {
+    const prod = productMap[item.product_id];
+    if (!prod) {
+      res.status(400);
+      return next(new Error(`Product not found: ${item.product_id}`));
+    }
+    if (!prod.is_available) {
+      res.status(400);
+      return next(new Error(`Product is not available: ${prod.title}`));
+    }
+    if (prod.stock < item.quantity) {
+      res.status(400);
+      return next(new Error(`Insufficient stock for product "${prod.title}". Available: ${prod.stock}, Requested: ${item.quantity}`));
+    }
+  }
+
+  // 2. Create the order row
+  const total_amount = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const { data: order, error: orderError } = await supabaseAdmin
     .from('orders')
     .insert({ buyer_id: req.user.id, seller_id, total_amount })
@@ -28,7 +63,7 @@ const placeOrder = async (req, res, next) => {
     return next(new Error(`Order creation failed: ${orderError.message}`));
   }
 
-  // 2. Insert all order_items
+  // 3. Insert all order_items
   const orderItems = items.map(({ product_id, quantity, price }) => ({
     order_id: order.id,
     product_id,
@@ -41,40 +76,64 @@ const placeOrder = async (req, res, next) => {
     .insert(orderItems);
 
   if (itemsError) {
+    // Rollback order
+    await supabaseAdmin.from('orders').delete().eq('id', order.id);
     res.status(500);
-    return next(new Error(`Order items failed: ${itemsError.message}`));
+    return next(new Error(`Order items creation failed: ${itemsError.message}`));
   }
 
-  // 3. Decrement stock for each product
-  for (const { product_id, quantity } of items) {
-    const { data: prod } = await supabase
-      .from('products')
-      .select('stock')
-      .eq('id', product_id)
-      .single();
+  // 4. Decrement stock atomically and keep track of decremented items in case we need to roll back
+  const decrementedItems = [];
+  let stockErrorOccurred = false;
+  let stockErrorMessage = '';
 
-    if (prod) {
+  for (const { product_id, quantity } of items) {
+    const currentStock = productMap[product_id].stock;
+    const { data: updatedProd, error: updateError } = await supabaseAdmin
+      .from('products')
+      .update({ stock: currentStock - quantity })
+      .eq('id', product_id)
+      .gte('stock', quantity)
+      .select();
+
+    if (updateError || !updatedProd || updatedProd.length === 0) {
+      stockErrorOccurred = true;
+      stockErrorMessage = updateError ? updateError.message : `Product stock was updated concurrently by another order`;
+      break;
+    }
+    
+    decrementedItems.push({ product_id, quantity, prevStock: currentStock });
+  }
+
+  if (stockErrorOccurred) {
+    // Rollback stock decrements
+    for (const { product_id, prevStock } of decrementedItems) {
       await supabaseAdmin
         .from('products')
-        .update({ stock: Math.max(0, prod.stock - quantity) })
+        .update({ stock: prevStock })
         .eq('id', product_id);
     }
+    // Delete order
+    await supabaseAdmin.from('orders').delete().eq('id', order.id);
+    
+    res.status(409); // Conflict
+    return next(new Error(`Order failed due to concurrent stock changes: ${stockErrorMessage}`));
   }
 
-  // 4. Seed initial tracking entry
+  // 5. Seed initial tracking entry
   await supabaseAdmin
     .from('order_tracking')
     .insert({ order_id: order.id, status: 'pending' });
 
   res.status(201).json({ message: 'Order placed successfully', order });
-};
+});
 
 /**
  * GET /api/orders
  * Protected — returns orders belonging to the authenticated user (buyer or seller).
  */
-const getMyOrders = async (req, res, next) => {
-  const { data, error } = await supabase
+const getMyOrders = asyncHandler(async (req, res, next) => {
+  const { data, error } = await supabaseAdmin
     .from('orders')
     .select(`
       id, total_amount, order_status, created_at,
@@ -91,16 +150,16 @@ const getMyOrders = async (req, res, next) => {
   }
 
   res.json({ orders: data });
-};
+});
 
 /**
  * GET /api/orders/:id
  * Protected — returns a single order with full tracking history.
  */
-const getOrderById = async (req, res, next) => {
+const getOrderById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('orders')
     .select(`
       *,
@@ -119,14 +178,14 @@ const getOrderById = async (req, res, next) => {
   }
 
   res.json({ order: data });
-};
+});
 
 /**
  * PATCH /api/orders/:id/status
  * Protected — seller only. Updates order_status + appends tracking row.
  * Body: { status: 'packed' | 'shipped' | 'delivered' }
  */
-const updateOrderStatus = async (req, res, next) => {
+const updateOrderStatus = asyncHandler(async (req, res, next) => {
   const { id }     = req.params;
   const { status } = req.body;
   const validStatuses = ['pending', 'packed', 'shipped', 'delivered'];
@@ -136,8 +195,8 @@ const updateOrderStatus = async (req, res, next) => {
     return next(new Error(`status must be one of: ${validStatuses.join(', ')}`));
   }
 
-  // Confirm this seller owns the order
-  const { data: order, error: fetchError } = await supabase
+  // Confirm this seller owns the order using supabaseAdmin
+  const { data: order, error: fetchError } = await supabaseAdmin
     .from('orders')
     .select('seller_id')
     .eq('id', id)
@@ -153,8 +212,8 @@ const updateOrderStatus = async (req, res, next) => {
     return next(new Error('Forbidden — you are not the seller for this order'));
   }
 
-  // Update status
-  const { data: updated, error: updateError } = await supabase
+  // Update status using supabaseAdmin
+  const { data: updated, error: updateError } = await supabaseAdmin
     .from('orders')
     .update({ order_status: status })
     .eq('id', id)
@@ -172,6 +231,6 @@ const updateOrderStatus = async (req, res, next) => {
     .insert({ order_id: id, status });
 
   res.json({ message: `Order marked as ${status}`, order: updated });
-};
+});
 
 module.exports = { placeOrder, getMyOrders, getOrderById, updateOrderStatus };

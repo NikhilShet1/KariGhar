@@ -11,11 +11,12 @@ import { useProducts } from '../../context/ProductContext';
 import { useLanguage } from '../../context/LanguageContext';
 import SellerLayout from './components/SellerLayout';
 import toast from 'react-hot-toast';
+import { api } from '../../services/api';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { products, addProduct } = useProducts();
+  const { products, addProduct, updateProductStock, refreshProducts } = useProducts();
   const { language, changeLanguage, t } = useLanguage();
   
   // Tabs: overview | bazaar | orders | earnings | sikho
@@ -112,12 +113,57 @@ const Dashboard = () => {
   // Fallback to Radha Devi if user name not set
   const displayName = user?.name || user?.full_name || 'Radha Devi';
 
+  const [stats, setStats] = useState({ totalProducts: 0, totalOrders: 0, revenue: 0, pendingOrdersCount: 0 });
+
+  const fetchDashboardStats = async () => {
+    try {
+      const res = await api.get('/api/seller/dashboard');
+      if (res && res.stats) {
+        setStats(res.stats);
+        setEarningsBalance(res.stats.revenue);
+      }
+    } catch (err) {
+      console.error('Failed to load seller stats:', err);
+    }
+  };
+
+  const fetchSellerOrders = async () => {
+    try {
+      const res = await api.get('/api/seller/orders');
+      if (res && res.orders) {
+        const mapped = res.orders.map(o => ({
+          id: o.id,
+          buyer: o.buyer?.full_name || 'Buyer',
+          location: `${o.buyer?.district || 'India'}, ${o.buyer?.state || ''}`,
+          product: o.order_items?.[0]?.product?.title || 'Handicrafts',
+          price: Number(o.total_amount),
+          image: o.order_items?.[0]?.product?.image_urls?.[0] || '/images/earthen-sanctuary-vase.png',
+          status: o.order_status.charAt(0).toUpperCase() + o.order_status.slice(1),
+          date: new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          voiceInstruction: ''
+        }));
+        setOrders(mapped);
+      }
+    } catch (err) {
+      console.error('Failed to load seller orders:', err);
+    }
+  };
+
   // Synchronize local products with context data on load
   useEffect(() => {
     if (products && products.length > 0) {
       setLocalProducts(products);
     }
   }, [products]);
+
+  // Synchronize stats and orders when user or activeTab changes
+  useEffect(() => {
+    if (user) {
+      fetchDashboardStats();
+      fetchSellerOrders();
+      refreshProducts();
+    }
+  }, [user, activeTab]);
 
   // Parse voice commands received from SellerLayout's microphone helper
   const handleVoiceInput = (text) => {
@@ -180,26 +226,27 @@ const Dashboard = () => {
   };
 
   // Modify stock counts reactively
-  const handleUpdateStock = (productId, amount) => {
-    const updated = localProducts.map(p => {
-      if (p.id === productId) {
-        const currentStock = p.stock !== undefined ? p.stock : 12; // fallback to 12 if undefined
-        const newStock = Math.max(0, currentStock + amount);
-        return {
-          ...p,
-          stock: newStock,
-          stockStatus: newStock > 0 ? `In stock (${newStock} units)` : "Out of stock"
-        };
+  const handleUpdateStock = async (productId, amount) => {
+    const item = localProducts.find(p => p.id === productId);
+    if (!item) return;
+    const currentStock = item.stock !== undefined ? item.stock : 12;
+    const newStock = Math.max(0, currentStock + amount);
+
+    try {
+      const success = await updateProductStock(productId, newStock);
+      if (success) {
+        toast.success("Stock count updated!");
+      } else {
+        toast.error("Failed to update stock.");
       }
-      return p;
-    });
-    setLocalProducts(updated);
-    localStorage.setItem('karighar_db_products', JSON.stringify(updated));
-    toast.success("Stock count updated!");
+    } catch (err) {
+      toast.error("Error updating stock.");
+    }
   };
 
   // Submit product creation form
-  const handleAddProductSubmit = (e) => {
+  // Submit product creation form
+  const handleAddProductSubmit = async (e) => {
     if (e) e.preventDefault();
     
     if (!newTitle.trim() || !newPrice.trim()) {
@@ -210,34 +257,38 @@ const Dashboard = () => {
     const priceNum = Number(newPrice);
     const stockNum = Number(newStock);
 
-    const newProd = addProduct({
-      title: newTitle,
-      price: priceNum,
-      category: newCategory,
-      description: newDescription || `${newTitle} handcrafted with traditional skills.`,
-      stock: stockNum,
-      stockStatus: `In stock (${stockNum} units)`,
-      artisanId: user?.id || 'meera-devi',
-      subtitle: `${newCategory.toUpperCase()} • ${user?.district?.toUpperCase() || 'BHUJ'} DISTRICT`,
-      district: user?.district || 'Bhuj',
-      images: [selectedImage],
-      tags: ["Handmade", "Local Craft"]
-    });
+    try {
+      const newProd = await addProduct({
+        title: newTitle,
+        price: priceNum,
+        category: newCategory,
+        description: newDescription || `${newTitle} handcrafted with traditional skills.`,
+        stock: stockNum,
+        stockStatus: `In stock (${stockNum} units)`,
+        artisanId: user?.id || 'meera-devi',
+        subtitle: `${newCategory.toUpperCase()} • ${user?.district?.toUpperCase() || 'BHUJ'} DISTRICT`,
+        district: user?.district || 'Bhuj',
+        images: [selectedImage],
+        tags: ["Handmade", "Local Craft"]
+      });
 
-    // Update local state list
-    setLocalProducts([newProd, ...localProducts]);
-    
-    // Reset Form
-    setNewTitle('');
-    setNewPrice('');
-    setNewStock('10');
-    setNewDescription('');
-    setShowAddProductModal(false);
-    
-    toast.success(`"${newTitle}" has been listed on KariGhar Bazaar!`, {
-      icon: '🎉',
-      duration: 5000
-    });
+      // Update local state list
+      setLocalProducts([newProd, ...localProducts]);
+      
+      // Reset Form
+      setNewTitle('');
+      setNewPrice('');
+      setNewStock('10');
+      setNewDescription('');
+      setShowAddProductModal(false);
+      
+      toast.success(`"${newTitle}" has been listed on KariGhar Bazaar!`, {
+        icon: '🎉',
+        duration: 5000
+      });
+    } catch (err) {
+      toast.error(err.message || "Failed to list craft.");
+    }
   };
 
   // Simulate record voice description
@@ -254,26 +305,27 @@ const Dashboard = () => {
   };
 
   // Mark pending order as shipped
-  const handleShipOrder = (orderId) => {
-    const trackingNum = `India Post EP${Math.floor(100000000 + Math.random() * 900000000)}IN`;
-    setOrders(prev => prev.map(o => {
-      if (o.id === orderId) {
-        return { ...o, status: 'Shipped', tracking: trackingNum };
-      }
-      return o;
-    }));
-    toast.success(`Order #${orderId} marked as Shipped! India Post tracking generated.`);
+  const handleShipOrder = async (orderId) => {
+    try {
+      await api.patch(`/api/orders/${orderId}/status`, { status: 'shipped' });
+      toast.success(`Order marked as Shipped!`);
+      await fetchSellerOrders();
+      await fetchDashboardStats();
+    } catch (err) {
+      toast.error(err.message || 'Failed to update order status');
+    }
   };
 
   // Mark shipped order as completed/delivered
-  const handleDeliverOrder = (orderId) => {
-    setOrders(prev => prev.map(o => {
-      if (o.id === orderId) {
-        return { ...o, status: 'Completed' };
-      }
-      return o;
-    }));
-    toast.success(`Order #${orderId} delivered successfully!`);
+  const handleDeliverOrder = async (orderId) => {
+    try {
+      await api.patch(`/api/orders/${orderId}/status`, { status: 'delivered' });
+      toast.success(`Order delivered successfully!`);
+      await fetchSellerOrders();
+      await fetchDashboardStats();
+    } catch (err) {
+      toast.error(err.message || 'Failed to update order status');
+    }
   };
 
   // Bank payout simulation flow

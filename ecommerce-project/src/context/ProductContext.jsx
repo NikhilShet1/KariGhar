@@ -1,48 +1,72 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { INITIAL_PRODUCTS, INITIAL_ARTISANS, INITIAL_REVIEWS } from '../utils/constants';
+import { productService } from '../services/productService';
 
 const ProductContext = createContext();
 
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
-  const [artisans, setArtisans] = useState([]);
-  const [reviews, setReviews] = useState([]);
+  const [artisans, setArtisans] = useState(INITIAL_ARTISANS);
+  const [reviews, setReviews] = useState(INITIAL_REVIEWS);
+  const [categoryMap, setCategoryMap] = useState({});
 
-  // Initialize from localStorage or fallback to constants
-  useEffect(() => {
-    const storedProducts = localStorage.getItem('karighar_db_products');
-    const storedArtisans = localStorage.getItem('karighar_db_artisans');
-    const storedReviews = localStorage.getItem('karighar_db_reviews');
+  const mapProduct = (p) => ({
+    id: p.id,
+    title: p.title,
+    subtitle: `${p.category?.name?.toUpperCase() || 'CRAFT'} • ${p.seller?.district?.toUpperCase() || 'INDIA'}`,
+    price: Number(p.price),
+    rating: p.rating || 4.8,
+    reviewCount: p.reviewCount || 12,
+    category: p.category?.name || 'Pottery & Ceramics',
+    district: p.seller?.district || 'Bhuj',
+    artisanId: p.seller?.id || 'artisan',
+    images: p.image_urls && p.image_urls.length > 0 ? p.image_urls : ["/images/earthen-sanctuary-vase.png"],
+    tags: ["Handmade", "Local Craft"],
+    stock: p.stock,
+    stockStatus: p.stock > 0 ? `In stock (${p.stock} units)` : "Out of stock",
+    description: p.description || '',
+    materials: ["Natural materials"],
+    process: []
+  });
 
-    if (storedProducts) {
-      const parsedProducts = JSON.parse(storedProducts);
-      const hasOldImages = parsedProducts && parsedProducts.some(p => 
-        p.images && p.images.some(img => typeof img === 'string' && img.includes('unsplash.com'))
-      );
-      if (hasOldImages) {
+  const fetchProducts = async () => {
+    try {
+      const data = await productService.getAll();
+      if (data && data.products) {
+        const mapped = data.products.map(mapProduct);
+        setProducts(mapped);
+      }
+    } catch (err) {
+      console.error('[ProductContext] Error fetching products, falling back to local database:', err);
+      const storedProducts = localStorage.getItem('karighar_db_products');
+      if (storedProducts) {
+        setProducts(JSON.parse(storedProducts));
+      } else {
         setProducts(INITIAL_PRODUCTS);
         localStorage.setItem('karighar_db_products', JSON.stringify(INITIAL_PRODUCTS));
-      } else {
-        setProducts(parsedProducts);
       }
-    } else {
-      setProducts(INITIAL_PRODUCTS);
-      localStorage.setItem('karighar_db_products', JSON.stringify(INITIAL_PRODUCTS));
     }
+  };
 
-    if (storedArtisans) {
-      setArtisans(JSON.parse(storedArtisans));
-    } else {
-      setArtisans(INITIAL_ARTISANS);
-      localStorage.setItem('karighar_db_artisans', JSON.stringify(INITIAL_ARTISANS));
+  const fetchCategories = async () => {
+    try {
+      const data = await productService.getCategories();
+      if (data && data.categories) {
+        const mapping = {};
+        data.categories.forEach(c => {
+          mapping[c.name] = c.id;
+        });
+        setCategoryMap(mapping);
+      }
+    } catch (err) {
+      console.error('[ProductContext] Error fetching categories:', err);
     }
+  };
 
-    if (storedReviews) {
-      setReviews(JSON.parse(storedReviews));
-    } else {
-      setReviews(INITIAL_REVIEWS);
-      localStorage.setItem('karighar_db_reviews', JSON.stringify(INITIAL_REVIEWS));
-    }
+  // Fetch categories and products on mount
+  useEffect(() => {
+    fetchCategories();
+    fetchProducts();
   }, []);
 
   // Retrieve product by ID
@@ -61,24 +85,71 @@ export const ProductProvider = ({ children }) => {
   };
 
   // Add a new product (Seller functionality)
-  const addProduct = (newProdData) => {
-    const newProduct = {
-      ...newProdData,
-      id: newProdData.id || `p-${Date.now()}`,
-      rating: 5.0,
-      reviewCount: 0,
-      images: newProdData.images || ["/images/earthen-sanctuary-vase.png"],
-      tags: newProdData.tags || ["Handmade", "Eco-friendly"],
-      stockStatus: "In stock, ready to ship"
-    };
+  const addProduct = async (newProdData) => {
+    try {
+      const categoryId = categoryMap[newProdData.category] || null;
+      
+      const payload = {
+        title: newProdData.title,
+        description: newProdData.description,
+        price: Number(newProdData.price),
+        stock: Number(newProdData.stock || 5),
+        category_id: categoryId,
+        image_urls: newProdData.images || ["/images/earthen-sanctuary-vase.png"]
+      };
 
-    const updatedProducts = [newProduct, ...products];
-    setProducts(updatedProducts);
-    localStorage.setItem('karighar_db_products', JSON.stringify(updatedProducts));
-    return newProduct;
+      const res = await productService.create(payload);
+      
+      // Re-fetch products to ensure full joined objects (seller and category details)
+      await fetchProducts();
+      
+      return mapProduct(res.product);
+    } catch (err) {
+      console.error('[ProductContext] Failed to add product to database:', err);
+      // Fallback
+      const newProduct = {
+        ...newProdData,
+        id: newProdData.id || `p-${Date.now()}`,
+        rating: 5.0,
+        reviewCount: 0,
+        images: newProdData.images || ["/images/earthen-sanctuary-vase.png"],
+        tags: newProdData.tags || ["Handmade", "Eco-friendly"],
+        stockStatus: "In stock, ready to ship"
+      };
+
+      const updatedProducts = [newProduct, ...products];
+      setProducts(updatedProducts);
+      localStorage.setItem('karighar_db_products', JSON.stringify(updatedProducts));
+      return newProduct;
+    }
   };
 
-  // Submit a customer review (Updates local state & re-calculates product scores!)
+  // Update product stock (Seller functionality)
+  const updateProductStock = async (productId, newStock) => {
+    try {
+      await productService.update(productId, { stock: newStock });
+      await fetchProducts();
+      return true;
+    } catch (err) {
+      console.error('[ProductContext] Failed to update product stock:', err);
+      // Fallback
+      const updated = products.map(p => {
+        if (p.id === productId) {
+          return {
+            ...p,
+            stock: newStock,
+            stockStatus: newStock > 0 ? `In stock (${newStock} units)` : "Out of stock"
+          };
+        }
+        return p;
+      });
+      setProducts(updated);
+      localStorage.setItem('karighar_db_products', JSON.stringify(updated));
+      return false;
+    }
+  };
+
+  // Submit a customer review
   const addReview = (productId, rating, reviewerName, text) => {
     const newReview = {
       id: `r-${Date.now()}`,
@@ -94,7 +165,7 @@ export const ProductProvider = ({ children }) => {
     setReviews(updatedReviews);
     localStorage.setItem('karighar_db_reviews', JSON.stringify(updatedReviews));
 
-    // Recompute product rating & count!
+    // Recompute product rating & count
     const productReviews = updatedReviews.filter(rev => rev.productId === productId);
     const avgRating = productReviews.reduce((sum, rev) => sum + rev.rating, 0) / productReviews.length;
 
@@ -122,7 +193,9 @@ export const ProductProvider = ({ children }) => {
       getArtisanById,
       getReviewsForProduct,
       addProduct,
-      addReview
+      updateProductStock,
+      addReview,
+      refreshProducts: fetchProducts
     }}>
       {children}
     </ProductContext.Provider>

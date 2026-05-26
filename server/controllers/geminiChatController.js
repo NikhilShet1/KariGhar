@@ -84,7 +84,9 @@ HELP PAGE (/help):
 7. Guide users to specific pages when relevant (e.g., "Visit our Collections page to browse crafts").
 `;
 
-const chatWithGemini = async (req, res, next) => {
+const asyncHandler = require('../utils/asyncHandler');
+
+const chatWithGemini = asyncHandler(async (req, res, next) => {
   const { transcript, page, language } = req.body;
 
   if (!transcript || typeof transcript !== 'string') {
@@ -152,6 +154,6 @@ const chatWithGemini = async (req, res, next) => {
 
     res.json({ reply: fallback, source: 'fallback', error: err.message });
   }
-};
+});
 
 module.exports = { chatWithGemini };

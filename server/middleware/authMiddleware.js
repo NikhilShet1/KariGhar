@@ -1,10 +1,11 @@
-const { supabase } = require('../config/supabase');
+const { supabase, supabaseAdmin } = require('../config/supabase');
+const asyncHandler = require('../utils/asyncHandler');
 
 /**
  * protect — validates the Bearer token from the Authorization header.
  * Attaches req.user (Supabase auth user) on success.
  */
-const protect = async (req, res, next) => {
+const protect = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -23,14 +24,14 @@ const protect = async (req, res, next) => {
 
   req.user = user;
   next();
-};
+});
 
 /**
  * requireSeller — must run after protect.
  * Rejects non-seller roles by checking the profiles table.
  */
-const requireSeller = async (req, res, next) => {
-  const { data: profile, error } = await supabase
+const requireSeller = asyncHandler(async (req, res, next) => {
+  const { data: profile, error } = await supabaseAdmin
     .from('profiles')
     .select('role')
     .eq('id', req.user.id)
@@ -42,6 +43,6 @@ const requireSeller = async (req, res, next) => {
   }
 
   next();
-};
+});
 
 module.exports = { protect, requireSeller };

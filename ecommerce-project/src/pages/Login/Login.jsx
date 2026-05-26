@@ -22,6 +22,7 @@ const Login = () => {
 
   // Form fields
   const [fullName,  setFullName]  = useState('');
+  const [sellerName, setSellerName] = useState(''); // name-based login for sellers
   const [email,     setEmail]     = useState('');
   const [password,  setPassword]  = useState('');
   const [phone,     setPhone]     = useState('');
@@ -61,11 +62,16 @@ const Login = () => {
     if (isSignup && !fullName.trim()) {
       toast.error('Please enter your full name.'); return;
     }
-    if (!email.trim() || !email.includes('@')) {
+    // For seller login mode, use name-based credentials (same as seller page)
+    const isSellerLogin = !isSignup && role === 'Seller';
+    if (isSellerLogin && !sellerName.trim()) {
+      toast.error('Please enter your full name.'); return;
+    }
+    if (!isSellerLogin && (!email.trim() || !email.includes('@'))) {
       toast.error('Please enter a valid email address.'); return;
     }
-    if (!password.trim() || password.length < 6) {
-      toast.error('Password must be at least 6 characters.'); return;
+    if (!password.trim() || password.length < 4) {
+      toast.error('Password must be at least 4 characters.'); return;
     }
     if (isSignup && (!phone.trim() || phone.length < 10)) {
       toast.error('Please enter a valid phone number (min 10 digits).'); return;
@@ -78,7 +84,7 @@ const Login = () => {
         // ── SIGNUP ───────────────────────────────────────────────────────────
         const payload = {
           email,
-          password,
+          password: password.length < 6 ? password.padEnd(6, '0') : password,
           full_name:    fullName,
           role:         role === 'Seller' ? 'seller' : 'buyer',
           phone_number: phone || undefined,
@@ -86,14 +92,31 @@ const Login = () => {
         const data = await authService.signup(payload);
         login(data.user, data.session?.access_token);
         toast.success('Account created! Welcome to KariGhar.');
-        navigate(role === 'Seller' ? '/seller' : '/');
+        navigate(role === 'Seller' ? '/seller/dashboard' : '/');
+
+      } else if (isSellerLogin) {
+        // ── SELLER LOGIN (name-based, same as seller page) ──────────────────
+        const name = sellerName.trim();
+        const generatedEmail = `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}@karigar.com`;
+        const finalPassword = password.length < 6 ? password.padEnd(6, '0') : password;
+
+        const data = await authService.login({ email: generatedEmail, password: finalPassword });
+
+        if (data.user.role !== 'seller') {
+          toast.error('This account is not a seller account.');
+          return;
+        }
+
+        login(data.user, data.session?.access_token);
+        toast.success(`Welcome back, ${data.user.full_name || name}!`);
+        navigate('/seller/dashboard');
 
       } else {
-        // ── LOGIN ────────────────────────────────────────────────────────────
+        // ── CUSTOMER LOGIN ───────────────────────────────────────────────────
         const data = await authService.login({ email, password });
         login(data.user, data.session?.access_token);
         toast.success(`Welcome back, ${data.user.full_name || data.user.email}!`);
-        navigate(data.user.role === 'seller' ? '/seller' : '/');
+        navigate(data.user.role === 'seller' ? '/seller/dashboard' : '/');
       }
     } catch (err) {
       toast.error(err.message || 'Something went wrong. Please try again.');
@@ -172,13 +195,22 @@ const Login = () => {
               </div>
             )}
 
-            {/* Email */}
-            <div className="auth-input-group">
-              <label>{t('login.emailAddress')}</label>
-              <input type="email" placeholder="you@example.com" value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="auth-input-field" required />
-            </div>
+            {/* Email or Seller Name — seller login uses name-based credentials */}
+            {!isSignup && role === 'Seller' ? (
+              <div className="auth-input-group">
+                <label>{t('login.fullName')}</label>
+                <input type="text" placeholder="e.g. Aparna Devi" value={sellerName}
+                  onChange={(e) => setSellerName(e.target.value)}
+                  className="auth-input-field" required />
+              </div>
+            ) : (
+              <div className="auth-input-group">
+                <label>{t('login.emailAddress')}</label>
+                <input type="email" placeholder="you@example.com" value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="auth-input-field" required />
+              </div>
+            )}
 
             {/* Password */}
             <div className="auth-input-group">

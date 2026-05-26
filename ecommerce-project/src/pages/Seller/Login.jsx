@@ -5,6 +5,7 @@ import SellerLayout from './components/SellerLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import toast from 'react-hot-toast';
+import { authService } from '../../services/authService';
 
 const SellerLogin = () => {
   const navigate = useNavigate();
@@ -36,25 +37,34 @@ const SellerLogin = () => {
     }
   };
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     if (e) e.preventDefault();
-    
-    const name = fullName.trim() || 'Aparna Devi';
-    
-    const mockUser = {
-      id: `artisan-login-${Date.now()}`,
-      email: `${name.toLowerCase().replace(/\s+/g, '')}@karigar.com`,
-      full_name: name,
-      role: 'seller',
-      phone_number: '98765 00000',
-      state: 'Gujarat',
-      district: 'Bhuj',
-      profile_pic_url: '/karighar-assistant-lady.png'
-    };
 
-    login(mockUser, 'mock_seller_jwt_token');
-    toast.success(`Welcome back, ${name}!`);
-    navigate('/seller/dashboard');
+    const name = fullName.trim() || 'Aparna Devi';
+    const passwordVal = password.trim();
+
+    if (!passwordVal || passwordVal.length < 4) {
+      toast.error('Please enter your password / secret code.');
+      return;
+    }
+
+    const generatedEmail = `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}@karigar.com`;
+    const finalPassword = passwordVal.length < 6 ? passwordVal.padEnd(6, '0') : passwordVal;
+
+    try {
+      const res = await authService.login({ email: generatedEmail, password: finalPassword });
+
+      if (res.user.role !== 'seller') {
+        toast.error('This account is not a seller account.');
+        return;
+      }
+
+      login(res.user, res.session?.access_token);
+      toast.success(`Welcome back, ${res.user.full_name || name}!`);
+      navigate('/seller/dashboard');
+    } catch (err) {
+      toast.error(err.message || 'Login failed. Check your name and password.');
+    }
   };
 
   return (

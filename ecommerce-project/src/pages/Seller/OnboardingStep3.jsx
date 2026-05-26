@@ -4,6 +4,8 @@ import { FiGlobe, FiBell, FiPlay, FiX } from 'react-icons/fi';
 import SellerLayout from './components/SellerLayout';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { authService } from '../../services/authService';
+import toast from 'react-hot-toast';
 
 const OnboardingStep3 = () => {
   const navigate = useNavigate();
@@ -58,34 +60,58 @@ const OnboardingStep3 = () => {
     }
   };
 
-  const handleComplete = (e) => {
+  const handleComplete = async (e) => {
     if (e) e.preventDefault();
     
     // Retrieve credentials from temp localStorage
     const name = localStorage.getItem('karigar_temp_name') || 'Radha Devi';
-    const phoneNum = phone || '98765 43210';
+    const passwordVal = localStorage.getItem('karigar_temp_pass') || '123456';
+    const phoneNum = phone || '9876543210';
     const rajya = state || 'Gujarat';
     const zila = district || 'Bhuj';
 
-    // Mock register/login session
-    const mockUser = {
-      id: `artisan-${Date.now()}`,
-      email: `${name.toLowerCase().replace(/\s+/g, '')}@karigar.com`,
-      full_name: name,
-      role: 'seller',
-      phone_number: phoneNum,
-      state: rajya,
-      district: zila,
-      profile_pic_url: '/karighar-assistant-lady.png'
-    };
+    const generatedEmail = `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}@karigar.com`;
+    const finalPassword = passwordVal.length < 6 ? passwordVal.padEnd(6, '0') : passwordVal;
 
-    login(mockUser, 'mock_seller_jwt_token');
+    try {
+      const signupPayload = {
+        email: generatedEmail,
+        password: finalPassword,
+        full_name: name,
+        role: 'seller',
+        phone_number: phoneNum,
+        state: rajya,
+        district: zila,
+        village: 'KariGhar'
+      };
+      
+      let res;
+      try {
+        res = await authService.signup(signupPayload);
+      } catch (signupErr) {
+        // If user already exists, try logging in instead
+        try {
+          res = await authService.login({ email: generatedEmail, password: finalPassword });
+        } catch (loginErr) {
+          // Both failed — the user exists but with a different password
+          toast.error(
+            'An account with this name already exists. Please use your original password, or go to the login page.'
+          );
+          return;
+        }
+      }
 
-    // Clean up temporary values
-    localStorage.removeItem('karigar_temp_name');
-    localStorage.removeItem('karigar_temp_pass');
+      login(res.user, res.session?.access_token);
+      toast.success(`Welcome to KariGhar, ${res.user.full_name || name}!`);
 
-    navigate('/seller/dashboard');
+      // Clean up temporary values
+      localStorage.removeItem('karigar_temp_name');
+      localStorage.removeItem('karigar_temp_pass');
+
+      navigate('/seller/dashboard');
+    } catch (err) {
+      toast.error(err.message || 'Onboarding failed');
+    }
   };
 
   return (

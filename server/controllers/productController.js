@@ -1,14 +1,16 @@
-const { supabase, supabaseAdmin } = require('../config/supabase');
+const { supabaseAdmin } = require('../config/supabase');
+const asyncHandler = require('../utils/asyncHandler');
 
 /**
  * GET /api/products
  * Public. Optional query params: category_id, seller_id, search, limit, page
  */
-const getProducts = async (req, res, next) => {
+const getProducts = asyncHandler(async (req, res, next) => {
   const { category_id, seller_id, search, limit = 20, page = 1 } = req.query;
   const offset = (Number(page) - 1) * Number(limit);
 
-  let query = supabase
+  // Use supabaseAdmin for server-side queries to avoid RLS filtering when no user JWT is present
+  let query = supabaseAdmin
     .from('products')
     .select(`
       id, title, description, price, stock, image_urls, is_available, created_at,
@@ -31,16 +33,16 @@ const getProducts = async (req, res, next) => {
   }
 
   res.json({ products: data, page: Number(page), limit: Number(limit) });
-};
+});
 
 /**
  * GET /api/products/:id
  * Public. Returns single product with full seller + category info.
  */
-const getProductById = async (req, res, next) => {
+const getProductById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('products')
     .select(`
       *,
@@ -56,14 +58,14 @@ const getProductById = async (req, res, next) => {
   }
 
   res.json({ product: data });
-};
+});
 
 /**
  * POST /api/products
  * Protected — seller only.
  * Body: { title, description, price, stock, category_id?, image_urls? }
  */
-const createProduct = async (req, res, next) => {
+const createProduct = asyncHandler(async (req, res, next) => {
   const { title, description, price, stock, category_id, image_urls } = req.body;
 
   if (!title || price === undefined || stock === undefined) {
@@ -91,13 +93,13 @@ const createProduct = async (req, res, next) => {
   }
 
   res.status(201).json({ message: 'Product created', product: data });
-};
+});
 
 /**
  * PATCH /api/products/:id
  * Protected — only the owning seller can update.
  */
-const updateProduct = async (req, res, next) => {
+const updateProduct = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const allowedFields = ['title', 'description', 'price', 'stock', 'category_id', 'image_urls', 'is_available', 'voice_description_url'];
   const updates = Object.fromEntries(
@@ -109,8 +111,8 @@ const updateProduct = async (req, res, next) => {
     return next(new Error('No valid fields provided for update'));
   }
 
-  // Verify ownership first
-  const { data: existing, error: fetchError } = await supabase
+  // Verify ownership first using admin client
+  const { data: existing, error: fetchError } = await supabaseAdmin
     .from('products')
     .select('seller_id')
     .eq('id', id)
@@ -126,7 +128,7 @@ const updateProduct = async (req, res, next) => {
     return next(new Error('Forbidden — you do not own this product'));
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('products')
     .update(updates)
     .eq('id', id)
@@ -139,16 +141,17 @@ const updateProduct = async (req, res, next) => {
   }
 
   res.json({ message: 'Product updated', product: data });
-};
+});
 
 /**
  * DELETE /api/products/:id
  * Protected — only the owning seller can delete.
  */
-const deleteProduct = async (req, res, next) => {
+const deleteProduct = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const { data: existing, error: fetchError } = await supabase
+  // Verify ownership using admin client
+  const { data: existing, error: fetchError } = await supabaseAdmin
     .from('products')
     .select('seller_id')
     .eq('id', id)
@@ -164,7 +167,7 @@ const deleteProduct = async (req, res, next) => {
     return next(new Error('Forbidden — you do not own this product'));
   }
 
-  const { error } = await supabase.from('products').delete().eq('id', id);
+  const { error } = await supabaseAdmin.from('products').delete().eq('id', id);
 
   if (error) {
     res.status(500);
@@ -172,14 +175,14 @@ const deleteProduct = async (req, res, next) => {
   }
 
   res.json({ message: 'Product deleted' });
-};
+});
 
 /**
  * GET /api/products/categories
  * Public. Returns all product categories.
  */
-const getCategories = async (req, res, next) => {
-  const { data, error } = await supabase
+const getCategories = asyncHandler(async (req, res, next) => {
+  const { data, error } = await supabaseAdmin
     .from('categories')
     .select('id, name, icon_name')
     .order('name');
@@ -190,6 +193,6 @@ const getCategories = async (req, res, next) => {
   }
 
   res.json({ categories: data });
-};
+});
 
 module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct, getCategories };
