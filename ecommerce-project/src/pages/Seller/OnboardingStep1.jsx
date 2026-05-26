@@ -33,10 +33,10 @@ const OnboardingStep1 = () => {
       }
     } else {
       const name = text.replace(/my name is/i, '')
-                       .replace(/मेरा नाम है/g, '')
-                       .replace(/मेरा नाम/g, '')
-                       .replace(/ನನ್ನ ಹೆಸರು/g, '')
-                       .trim();
+        .replace(/मेरा नाम है/g, '')
+        .replace(/मेरा नाम/g, '')
+        .replace(/ನನ್ನ ಹೆಸರು/g, '')
+        .trim();
       setFullName(name);
     }
   };
@@ -82,7 +82,7 @@ const OnboardingStep1 = () => {
 
       {/* Main Flow Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-10 gap-12 items-stretch my-auto py-8">
-        
+
         {/* Left Column (60%) */}
         <div className="lg:col-span-6 flex flex-col gap-6 justify-between">
           <div className="flex flex-col gap-4">
@@ -104,8 +104,8 @@ const OnboardingStep1 = () => {
             <form onSubmit={handleNext} className="karigar-card flex flex-col gap-6 mt-2">
               <div className="flex flex-col gap-2">
                 <label className="text-lg font-bold text-[#8B3A1A]">{t('sellerOnboarding.fullName')}</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder={t('sellerOnboarding.placeholderName')}
@@ -125,13 +125,13 @@ const OnboardingStep1 = () => {
 
           {/* Need Help Video Section */}
           <div className="flex flex-col gap-3 mt-4">
-            <div 
+            <div
               onClick={() => setShowVideoModal(true)}
               className="video-thumbnail-container relative w-full max-w-sm h-36 bg-[#E5DCD0] flex items-center justify-center border-2 border-white/80 rounded-2xl cursor-pointer"
             >
-              <img 
-                src="/images/meera-devi-potter.png" 
-                alt="Help Video Preview" 
+              <img
+                src="/images/meera-devi-potter.png"
+                alt="Help Video Preview"
                 className="w-full h-full object-cover opacity-60"
               />
               <div className="video-play-btn">
@@ -145,8 +145,8 @@ const OnboardingStep1 = () => {
 
           {/* Voice Guidance Saree Bubble */}
           <div className="mt-4">
-            <VoiceGuidance 
-              text={t('sellerOnboarding.voiceGuidanceStep1')} 
+            <VoiceGuidance
+              text={t('sellerOnboarding.voiceGuidanceStep1')}
               showDots={true}
             />
           </div>
@@ -155,9 +155,9 @@ const OnboardingStep1 = () => {
         {/* Right Column (40%) */}
         <div className="lg:col-span-4 relative rounded-[32px] overflow-hidden shadow-xl border-4 border-white/60 min-h-[350px] lg:min-h-full">
           <div className="absolute inset-0 bg-gradient-to-t from-[#8B3A1A]/20 to-transparent z-10 pointer-events-none"></div>
-          <img 
-            src="/images/parvati-devi-weaver.png" 
-            alt="Artisanal Handloom Saree Craft" 
+          <img
+            src="/images/parvati-devi-weaver.png"
+            alt="Artisanal Handloom Saree Craft"
             className="w-full h-full object-cover"
           />
         </div>
@@ -168,7 +168,7 @@ const OnboardingStep1 = () => {
       {showVideoModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-2xl relative shadow-2xl animate-fade-in border-4 border-[#8B3A1A]">
-            <button 
+            <button
               onClick={() => setShowVideoModal(false)}
               className="absolute top-4 right-4 text-2xl text-[#1A1A1A] hover:text-[#8B3A1A]"
               title="Close"
@@ -178,12 +178,12 @@ const OnboardingStep1 = () => {
             <h3 className="text-2xl font-bold text-[#8B3A1A] karigar-serif mb-4">{t('sellerOnboarding.needHelpWatch')}</h3>
             <div className="aspect-video bg-black rounded-2xl flex items-center justify-center text-white relative overflow-hidden">
               {/* Simulated video playback */}
-              <iframe 
+              <iframe
                 className="w-full h-full"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+                src="https://www.youtube.com/embed/KmXylqEUCZk?si=CuT_tw8gSj9uMHC4"
                 title="Help Video"
                 frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
             </div>
