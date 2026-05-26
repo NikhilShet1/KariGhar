@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useProducts } from '../../context/ProductContext';
+import { useLanguage } from '../../context/LanguageContext';
 import SellerLayout from './components/SellerLayout';
 import toast from 'react-hot-toast';
 
@@ -15,6 +16,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { products, addProduct } = useProducts();
+  const { language, changeLanguage, t } = useLanguage();
   
   // Tabs: overview | bazaar | orders | earnings | sikho
   const [activeTab, setActiveTab] = useState('overview');
@@ -329,7 +331,7 @@ const Dashboard = () => {
                 activeTab === 'overview' ? 'text-[#8B3A1A] after:w-full' : 'text-[#555555] hover:text-[#8B3A1A] after:w-0 hover:after:w-full'
               }`}
             >
-              Overview
+              {t('seller.overview')}
             </button>
             <button 
               onClick={() => setActiveTab('bazaar')} 
@@ -337,7 +339,7 @@ const Dashboard = () => {
                 activeTab === 'bazaar' ? 'text-[#8B3A1A] after:w-full' : 'text-[#555555] hover:text-[#8B3A1A] after:w-0 hover:after:w-full'
               }`}
             >
-              Bazaar (Stock)
+              {t('seller.bazaar')}
             </button>
             <button 
               onClick={() => setActiveTab('orders')} 
@@ -345,7 +347,7 @@ const Dashboard = () => {
                 activeTab === 'orders' ? 'text-[#8B3A1A] after:w-full' : 'text-[#555555] hover:text-[#8B3A1A] after:w-0 hover:after:w-full'
               }`}
             >
-              Orders
+              {t('seller.orders')}
             </button>
             <button 
               onClick={() => setActiveTab('earnings')} 
@@ -353,7 +355,7 @@ const Dashboard = () => {
                 activeTab === 'earnings' ? 'text-[#8B3A1A] after:w-full' : 'text-[#555555] hover:text-[#8B3A1A] after:w-0 hover:after:w-full'
               }`}
             >
-              Earnings
+              {t('seller.earnings')}
             </button>
             <button 
               onClick={() => setActiveTab('sikho')} 
@@ -361,22 +363,34 @@ const Dashboard = () => {
                 activeTab === 'sikho' ? 'text-[#8B3A1A] after:w-full' : 'text-[#555555] hover:text-[#8B3A1A] after:w-0 hover:after:w-full'
               }`}
             >
-              Sikho (Learn)
+              {t('seller.sikho')}
             </button>
             <Link 
               to="/artisans" 
               className="font-semibold text-base py-2 text-[#555555] hover:text-[#8B3A1A] transition-all"
             >
-              Sisters (Community)
+              {t('seller.sisters')}
             </Link>
           </nav>
 
           {/* Right Action Icons */}
           <div className="flex items-center gap-4 md:gap-6">
             
-            <button className="nav-btn-icon" onClick={() => toast.success("Language switched to Hindi/English Assistance active")} title="Language Options">
-              <FiGlobe />
-            </button>
+            {/* Language Selector Dropdown */}
+            <div className="flex items-center gap-1 bg-[#FDF8F4] border border-[#E5DCD0] rounded-xl px-2 py-1 shadow-sm">
+              <FiGlobe className="text-[#8B3A1A] w-4 h-4" />
+              <select
+                value={language}
+                onChange={(e) => changeLanguage(e.target.value)}
+                className="bg-transparent border-none text-xs font-bold text-[#1A1A1A] outline-none cursor-pointer p-0"
+                title={t('nav.languageSelect')}
+                style={{ fontFamily: 'var(--font-sans)', appearance: 'none', WebkitAppearance: 'none' }}
+              >
+                <option value="en">EN</option>
+                <option value="hi">हिन्दी</option>
+                <option value="kn">ಕನ್ನಡ</option>
+              </select>
+            </div>
 
             <Link to="/" className="flex items-center gap-1.5 text-sm font-semibold text-[#2D5A3D] hover:text-[#8B3A1A] transition-colors" title="Go to Consumer Store">
               🏠 <span className="hidden sm:inline">Store</span>
@@ -426,10 +440,10 @@ const Dashboard = () => {
             {/* Welcome Banner Card */}
             <div className="karigar-card w-full flex flex-col gap-3 border-l-[6px] border-l-[#8B3A1A] shadow-md bg-white">
               <span className="text-lg md:text-xl italic font-semibold text-[#8B3A1A] karigar-serif">
-                "When we grow together, our village prospers."
+                {t('seller.motto')}
               </span>
               <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A1A] karigar-serif">
-                Welcome, {displayName}
+                {t('seller.welcome')}{displayName}
               </h2>
             </div>
 
@@ -447,7 +461,7 @@ const Dashboard = () => {
                       <FiShoppingBag className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-[#1A1A1A] group-hover:text-[#8B3A1A] transition-colors">Orders</h4>
+                      <h4 className="text-xl font-bold text-[#1A1A1A] group-hover:text-[#8B3A1A] transition-colors">{t('seller.orders')}</h4>
                       <p className="text-sm text-[#666666]">View and manage your orders</p>
                     </div>
                   </div>
@@ -472,7 +486,7 @@ const Dashboard = () => {
                       <FiDollarSign className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-[#1A1A1A] group-hover:text-[#2D5A3D] transition-colors">Earnings</h4>
+                      <h4 className="text-xl font-bold text-[#1A1A1A] group-hover:text-[#2D5A3D] transition-colors">{t('seller.earnings')}</h4>
                       <p className="text-sm text-[#666666]">Your hard earned money</p>
                     </div>
                   </div>
@@ -497,7 +511,7 @@ const Dashboard = () => {
                       <FiBox className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-[#1A1A1A] group-hover:text-[#8B3A1A] transition-colors">Stock</h4>
+                      <h4 className="text-xl font-bold text-[#1A1A1A] group-hover:text-[#8B3A1A] transition-colors">{t('seller.stock')}</h4>
                       <p className="text-sm text-[#666666]">Manage your products</p>
                     </div>
                   </div>
@@ -522,7 +536,7 @@ const Dashboard = () => {
                       <FiUsers className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-[#1A1A1A] group-hover:text-purple-600 transition-colors">Community</h4>
+                      <h4 className="text-xl font-bold text-[#1A1A1A] group-hover:text-purple-600 transition-colors">{t('seller.community')}</h4>
                       <p className="text-sm text-[#666666]">Sisters of your craft</p>
                     </div>
                   </div>
@@ -537,7 +551,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="flex justify-between items-end border-t border-[#E5DCD0]/30 pt-4 mt-2">
-                  <span className="text-xs font-bold text-purple-600 tracking-wider uppercase">Enter Voice Circle</span>
+                  <span className="text-xs font-bold text-purple-600 tracking-wider uppercase">{t('seller.enterVoice')}</span>
                   <FiArrowRight className="w-5 h-5 text-purple-600 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
@@ -547,7 +561,7 @@ const Dashboard = () => {
             {/* Dashed Border Prompt Card */}
             <div className="border-4 border-dashed border-[#E5DCD0] bg-white/50 rounded-[24px] p-8 text-center flex flex-col items-center justify-center gap-4 relative mt-4">
               <p className="text-lg font-semibold text-[#1A1A1A] max-w-md">
-                "Need help updating your stock? Just ask below!"
+                {t('seller.quickHelp')}
               </p>
               <div className="w-14 h-14 rounded-full bg-[#FFF0EB] border border-[#8B3A1A]/30 flex items-center justify-center text-[#8B3A1A] shadow-md animate-pulse mt-1 cursor-pointer">
                 <FiMic className="w-6 h-6" />
@@ -561,14 +575,14 @@ const Dashboard = () => {
           <div className="flex flex-col gap-6 w-full animate-in fade-in duration-300">
             <div className="flex justify-between items-center w-full">
               <div>
-                <h2 className="text-3xl font-bold text-[#8B3A1A] font-serif">Bazaar (Your Inventory)</h2>
-                <p className="text-[#666666] text-sm">List products in the global store & manage stock levels</p>
+                <h2 className="text-3xl font-bold text-[#8B3A1A] font-serif">{t('seller.bazaarTitle')}</h2>
+                <p className="text-[#666666] text-sm">{t('seller.bazaarSub')}</p>
               </div>
               <button 
                 onClick={() => setShowAddProductModal(true)}
                 className="karigar-btn-primary px-6 py-3.5 shadow-md flex items-center gap-2 cursor-pointer"
               >
-                <FiPlus className="w-5 h-5" /> Add New Craft / नई कला जोड़ें
+                <FiPlus className="w-5 h-5" /> {t('seller.addCraftBtn')}
               </button>
             </div>
 
@@ -593,9 +607,9 @@ const Dashboard = () => {
 
                     <div className="flex flex-col gap-2 pt-3 border-t border-[#E5DCD0]/30 mt-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-bold text-[#666666]">Stock Quantity:</span>
+                        <span className="text-sm font-bold text-[#666666]">{t('seller.stockQuantity')}:</span>
                         <span className={`text-sm font-extrabold ${stockVal > 0 ? 'text-[#2D5A3D]' : 'text-red-500'}`}>
-                          {stockVal > 0 ? `${stockVal} Units Available` : 'Out of Stock / समाप्त'}
+                          {stockVal > 0 ? `${stockVal} ${t('seller.availableUnits')}` : t('seller.outOfStock')}
                         </span>
                       </div>
                       
@@ -629,8 +643,8 @@ const Dashboard = () => {
         {activeTab === 'orders' && (
           <div className="flex flex-col gap-6 w-full animate-in fade-in duration-300">
             <div>
-              <h2 className="text-3xl font-bold text-[#8B3A1A] font-serif">Customer Orders</h2>
-              <p className="text-[#666666] text-sm">Fulfill orders from buyers directly with India Post logistics</p>
+              <h2 className="text-3xl font-bold text-[#8B3A1A] font-serif">{t('seller.ordersTitle')}</h2>
+              <p className="text-[#666666] text-sm">{t('seller.ordersSub')}</p>
             </div>
 
             {/* List of Orders */}
@@ -673,7 +687,7 @@ const Dashboard = () => {
                             {playingAudioId === order.id ? <FiPause /> : <FiVolume2 className="w-5 h-5" />}
                           </button>
                           <div className="flex-1">
-                            <span className="text-[11px] font-extrabold uppercase text-[#8B3A1A] tracking-wider block">🔈 Listen Custom Instruction</span>
+                            <span className="text-[11px] font-extrabold uppercase text-[#8B3A1A] tracking-wider block">🔈 {t('seller.listenRequest')}</span>
                             <p className="text-sm italic font-semibold text-[#1A1A1A] truncate max-w-sm sm:max-w-md mt-0.5">"{order.voiceInstruction}"</p>
                           </div>
                         </div>
@@ -696,7 +710,7 @@ const Dashboard = () => {
                         onClick={() => handleShipOrder(order.id)}
                         className="karigar-btn-secondary px-6 py-2.5 text-sm shadow-md cursor-pointer flex items-center gap-1.5"
                       >
-                        <FiSend className="w-4 h-4" /> Ship Package / कोरियर भेजें
+                        <FiSend className="w-4 h-4" /> {t('seller.shipPackageBtn')}
                       </button>
                     )}
 
@@ -705,13 +719,13 @@ const Dashboard = () => {
                         onClick={() => handleDeliverOrder(order.id)}
                         className="karigar-btn-primary px-6 py-2.5 text-sm shadow-md cursor-pointer flex items-center gap-1.5"
                       >
-                        <FiCheck className="w-4 h-4" /> Mark Delivered / मिल गया
+                        <FiCheck className="w-4 h-4" /> {t('seller.markDeliveredBtn')}
                       </button>
                     )}
 
                     {order.status === 'Completed' && (
                       <div className="flex items-center gap-1.5 text-[#2D5A3D] font-bold text-sm bg-emerald-50 px-4 py-2 rounded-xl border border-[#2D5A3D]/20">
-                        <FiCheck className="w-4 h-4" /> Paid & Delivered
+                        <FiCheck className="w-4 h-4" /> {t('seller.paidDelivered')}
                       </div>
                     )}
                   </div>
@@ -726,15 +740,15 @@ const Dashboard = () => {
         {activeTab === 'earnings' && (
           <div className="flex flex-col gap-6 w-full animate-in fade-in duration-300">
             <div>
-              <h2 className="text-3xl font-bold text-[#8B3A1A] font-serif">Your Earnings</h2>
-              <p className="text-[#666666] text-sm">Track your hard-earned money and withdraw safely to your bank account</p>
+              <h2 className="text-3xl font-bold text-[#8B3A1A] font-serif">{t('seller.earnings')}</h2>
+              <p className="text-[#666666] text-sm">{t('seller.earningsSub')}</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
               {/* Balance Box */}
               <div className="karigar-card bg-white border-l-[6px] border-l-[#2D5A3D] flex flex-col justify-between gap-6 shadow-md p-6 col-span-1 lg:col-span-1">
                 <div>
-                  <span className="text-xs font-bold text-[#666666] uppercase tracking-wider">Available for Payout</span>
+                  <span className="text-xs font-bold text-[#666666] uppercase tracking-wider">{t('seller.availablePayout')}</span>
                   <h3 className="text-5xl font-extrabold text-[#2D5A3D] mt-2 font-serif">₹{earningsBalance.toLocaleString('en-IN')}</h3>
                   <p className="text-xs text-[#666666] mt-2 leading-relaxed">
                     Direct payout into your State Bank of India account ending in <strong>4321</strong>.
@@ -749,30 +763,30 @@ const Dashboard = () => {
                       : 'bg-[#E2D7CB] text-[#888888] cursor-not-allowed shadow-none'
                   }`}
                 >
-                  <FiDollarSign /> Withdraw to Bank / बैंक में भेजें
+                  <FiDollarSign /> {t('seller.withdrawBtn')}
                 </button>
               </div>
 
               {/* Bank Details */}
               <div className="karigar-card bg-white p-6 shadow-md col-span-1 flex flex-col justify-between border border-[#E5DCD0]/40">
                 <div>
-                  <h4 className="text-lg font-bold text-[#8B3A1A] font-serif">Linked Bank Account</h4>
+                  <h4 className="text-lg font-bold text-[#8B3A1A] font-serif">{t('seller.linkedBank')}</h4>
                   <div className="h-0.5 bg-[#E5DCD0]/50 my-3"></div>
                   <div className="flex flex-col gap-2.5 mt-2 text-sm text-[#1A1A1A]">
                     <div className="flex justify-between">
-                      <span className="text-[#666666] font-semibold">Bank Name:</span>
+                      <span className="text-[#666666] font-semibold">{t('seller.bankName')}:</span>
                       <span className="font-bold">State Bank of India</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#666666] font-semibold">Holder Name:</span>
+                      <span className="text-[#666666] font-semibold">{t('seller.holderName')}:</span>
                       <span className="font-bold">{displayName}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#666666] font-semibold">Account Number:</span>
+                      <span className="text-[#666666] font-semibold">{t('seller.accNumber')}:</span>
                       <span className="font-mono font-bold">•••• •••• 4321</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#666666] font-semibold">IFSC Code:</span>
+                      <span className="text-[#666666] font-semibold">{t('seller.ifscCode')}:</span>
                       <span className="font-mono font-bold">SBIN0002819</span>
                     </div>
                   </div>
@@ -788,7 +802,7 @@ const Dashboard = () => {
               {/* Statistics */}
               <div className="karigar-card bg-white p-6 shadow-md col-span-1 flex flex-col justify-between border border-[#E5DCD0]/40">
                 <div>
-                  <h4 className="text-lg font-bold text-[#8B3A1A] font-serif">Lifetime Overview</h4>
+                  <h4 className="text-lg font-bold text-[#8B3A1A] font-serif">{t('seller.lifetimeOverview')}</h4>
                   <div className="h-0.5 bg-[#E5DCD0]/50 my-3"></div>
                   <div className="flex flex-col gap-4 mt-4">
                     <div>
@@ -809,7 +823,7 @@ const Dashboard = () => {
 
             {/* Payout Logs Table */}
             <div className="karigar-card bg-white p-6 shadow-md mt-4 border border-[#E5DCD0]/40">
-              <h4 className="text-xl font-bold text-[#1A1A1A] font-serif">Withdrawal & Transaction History</h4>
+              <h4 className="text-xl font-bold text-[#1A1A1A] font-serif">{t('seller.withdrawHistory')}</h4>
               <div className="overflow-x-auto mt-4">
                 <table className="w-full text-left border-collapse text-sm">
                   <thead>
@@ -869,8 +883,8 @@ const Dashboard = () => {
         {activeTab === 'sikho' && (
           <div className="flex flex-col gap-6 w-full animate-in fade-in duration-300">
             <div>
-              <h2 className="text-3xl font-bold text-[#8B3A1A] font-serif">Sikho (Learn & Grow)</h2>
-              <p className="text-[#666666] text-sm">Video and audio lessons in your local language to improve photos, packaging, and pricing</p>
+              <h2 className="text-3xl font-bold text-[#8B3A1A] font-serif">{t('seller.sikhoTitle')}</h2>
+              <p className="text-[#666666] text-sm">{t('seller.sikhoSub')}</p>
             </div>
 
             {/* Courses Grid */}
@@ -899,7 +913,7 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#8B3A1A] font-bold text-xs uppercase tracking-wider">Lesson 1 • Photography</span>
+                  <span className="text-[#8B3A1A] font-bold text-xs uppercase tracking-wider">{t('seller.lessonPhotography')}</span>
                   <h4 className="text-xl font-bold text-[#1A1A1A] leading-snug mt-1">Taking Beautiful Craft Photos</h4>
                   <p className="text-sm text-[#666666] mt-1.5">Use sunlight and natural backdrops to attract customer orders.</p>
                 </div>
@@ -928,7 +942,7 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#8B3A1A] font-bold text-xs uppercase tracking-wider">Lesson 2 • Logistics</span>
+                  <span className="text-[#8B3A1A] font-bold text-xs uppercase tracking-wider">{t('seller.lessonLogistics')}</span>
                   <h4 className="text-xl font-bold text-[#1A1A1A] leading-snug mt-1">Packing Fragile Clay Items Safely</h4>
                   <p className="text-sm text-[#666666] mt-1.5">Learn professional wood straw packing to prevent broken shipments.</p>
                 </div>
@@ -957,7 +971,7 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#8B3A1A] font-bold text-xs uppercase tracking-wider">Lesson 3 • Courier Support</span>
+                  <span className="text-[#8B3A1A] font-bold text-xs uppercase tracking-wider">{t('seller.lessonCourier')}</span>
                   <h4 className="text-xl font-bold text-[#1A1A1A] leading-snug mt-1">Understanding India Post & Shipping</h4>
                   <p className="text-sm text-[#666666] mt-1.5">How to send packages directly to city buyers from your village post office.</p>
                 </div>
@@ -986,7 +1000,7 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#8B3A1A] font-bold text-xs uppercase tracking-wider">Lesson 4 • Business Basics</span>
+                  <span className="text-[#8B3A1A] font-bold text-xs uppercase tracking-wider">{t('seller.lessonBusiness')}</span>
                   <h4 className="text-xl font-bold text-[#1A1A1A] leading-snug mt-1">Fair Pricing & Material Costs</h4>
                   <p className="text-sm text-[#666666] mt-1.5">Calculate costs and hours of handcraft work to ensure steady household profit.</p>
                 </div>
@@ -1010,7 +1024,7 @@ const Dashboard = () => {
             }`}
           >
             <span className="text-lg">🏠</span>
-            <span>Dashboard</span>
+            <span>{t('seller.overview')}</span>
           </button>
 
           {/* Tab: Bazaar */}
@@ -1021,7 +1035,7 @@ const Dashboard = () => {
             }`}
           >
             <span className="text-lg">🏪</span>
-            <span>Bazaar</span>
+            <span>{t('seller.bazaar')}</span>
           </button>
 
           {/* Tab: Orders */}
@@ -1032,7 +1046,7 @@ const Dashboard = () => {
             }`}
           >
             <span className="text-lg">🛍️</span>
-            <span>Orders</span>
+            <span>{t('seller.orders')}</span>
           </button>
 
           {/* Tab: Earnings */}
@@ -1043,7 +1057,7 @@ const Dashboard = () => {
             }`}
           >
             <span className="text-lg">💰</span>
-            <span>Earnings</span>
+            <span>{t('seller.earnings')}</span>
           </button>
 
           {/* Tab: Sikho */}
@@ -1054,7 +1068,7 @@ const Dashboard = () => {
             }`}
           >
             <span className="text-lg">📖</span>
-            <span>Sikho</span>
+            <span>{t('seller.sikho')}</span>
           </button>
 
           {/* Tab: Saheli Chat / Redirects */}
@@ -1063,7 +1077,7 @@ const Dashboard = () => {
             className="flex flex-col items-center gap-1 flex-1 py-1 text-xs font-bold transition-all text-[#666666] hover:text-[#8B3A1A]"
           >
             <span className="text-lg">💬</span>
-            <span>Saheli Chat</span>
+            <span>{t('seller.sisters')}</span>
           </Link>
 
         </div>
@@ -1081,14 +1095,14 @@ const Dashboard = () => {
               <FiX className="w-5 h-5" />
             </button>
 
-            <h3 className="font-serif text-2xl md:text-3xl font-bold text-[#8B3A1A] mb-1">List New Craft Item</h3>
-            <p className="text-[#666666] text-sm mb-6">Your creation will be shown instantly on the KariGhar customer storefront</p>
+            <h3 className="font-serif text-2xl md:text-3xl font-bold text-[#8B3A1A] mb-1">{t('seller.listNewCraft')}</h3>
+            <p className="text-[#666666] text-sm mb-6">{t('seller.instantShow')}</p>
 
             <form onSubmit={handleAddProductSubmit} className="flex flex-col gap-5">
               
               {/* Product Name */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-[#8B3A1A]">Craft Name / कला का नाम</label>
+                <label className="text-sm font-bold text-[#8B3A1A]">{t('seller.craftName')}</label>
                 <input 
                   type="text" 
                   value={newTitle}
@@ -1102,7 +1116,7 @@ const Dashboard = () => {
               {/* Row: Category & Price */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-bold text-[#8B3A1A]">Category / वर्ग</label>
+                  <label className="text-sm font-bold text-[#8B3A1A]">{t('seller.categoryLabel')}</label>
                   <select 
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
@@ -1116,7 +1130,7 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-bold text-[#8B3A1A]">Price / कीमत (₹)</label>
+                  <label className="text-sm font-bold text-[#8B3A1A]">{t('seller.priceLabel')}</label>
                   <input 
                     type="number" 
                     value={newPrice}
@@ -1130,7 +1144,7 @@ const Dashboard = () => {
 
               {/* Stock Quantity */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-[#8B3A1A]">Stock Quantity / स्टॉक मात्रा</label>
+                <label className="text-sm font-bold text-[#8B3A1A]">{t('seller.stockLabel')}</label>
                 <input 
                   type="number" 
                   value={newStock}
@@ -1144,7 +1158,7 @@ const Dashboard = () => {
               {/* Description & Voice Record */}
               <div className="flex flex-col gap-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-sm font-bold text-[#8B3A1A]">Description / विवरण</label>
+                  <label className="text-sm font-bold text-[#8B3A1A]">{t('seller.descriptionLabel')}</label>
                   <button 
                     type="button"
                     onClick={simulateVoiceRecord}
@@ -1154,7 +1168,7 @@ const Dashboard = () => {
                     }`}
                   >
                     <FiMic className="w-3.5 h-3.5" />
-                    {isRecordingDesc ? 'Recording...' : 'बोलकर लिखें (Voice Description)'}
+                    {isRecordingDesc ? t('seller.recordingDesc') : t('seller.voiceDescBtn')}
                   </button>
                 </div>
                 <textarea 
@@ -1167,7 +1181,7 @@ const Dashboard = () => {
 
               {/* Craft Preselected Image Selector */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-[#8B3A1A]">Select Craft Picture / तस्वीर चुनें</label>
+                <label className="text-sm font-bold text-[#8B3A1A]">{t('seller.selectPicLabel')}</label>
                 <div className="grid grid-cols-4 gap-3">
                   {CRAFT_IMAGES.map(img => (
                     <div 
@@ -1197,13 +1211,13 @@ const Dashboard = () => {
                   onClick={() => setShowAddProductModal(false)}
                   className="px-6 py-3.5 rounded-full border-2 border-[#E5DCD0] bg-white font-semibold text-[#666666] hover:bg-[#FFF0EB] cursor-pointer"
                 >
-                  Cancel
+                  {t('seller.cancelBtn')}
                 </button>
                 <button 
                   type="submit"
                   className="karigar-btn-primary px-8 py-3.5 shadow-md cursor-pointer"
                 >
-                  Add Craft / दुकान पर जोड़ें
+                  {t('seller.addCraftSubmit')}
                 </button>
               </div>
 
@@ -1233,14 +1247,14 @@ const Dashboard = () => {
                 <div className="w-16 h-16 rounded-full bg-emerald-50 text-[#2D5A3D] flex items-center justify-center text-3xl shadow-inner">
                   <FiDollarSign />
                 </div>
-                <h3 className="font-serif text-2xl font-bold text-[#8B3A1A]">Payout Verification</h3>
+                <h3 className="font-serif text-2xl font-bold text-[#8B3A1A]">{t('seller.payoutVerify')}</h3>
                 <p className="text-sm text-[#666666] max-w-xs leading-relaxed">
                   You are transferring <strong>₹{earningsBalance.toLocaleString('en-IN')}</strong> directly to State Bank of India.
                 </p>
 
                 <div className="w-full bg-white border border-[#E5DCD0] rounded-2xl p-4 text-left text-sm mt-2 flex flex-col gap-2">
                   <div className="flex justify-between">
-                    <span className="text-[#666666]">Bank Holder:</span>
+                    <span className="text-[#666666]">{t('seller.holderName')}:</span>
                     <strong className="text-[#1A1A1A]">{displayName}</strong>
                   </div>
                   <div className="flex justify-between">
@@ -1257,7 +1271,7 @@ const Dashboard = () => {
                   onClick={handleWithdrawConfirm}
                   className="karigar-btn-secondary w-full justify-center py-4 mt-4 shadow-md cursor-pointer text-base"
                 >
-                  Confirm Transfer / पक्का करें
+                  {t('seller.confirmTrans')}
                 </button>
               </div>
             )}
@@ -1267,7 +1281,7 @@ const Dashboard = () => {
               <div className="flex flex-col items-center gap-5 py-8">
                 <FiLoader className="w-14 h-14 text-[#8B3A1A] animate-spin" />
                 <div>
-                  <h4 className="font-bold text-lg text-[#1A1A1A] leading-snug">Connecting SBI Gateway...</h4>
+                  <h4 className="font-bold text-lg text-[#1A1A1A] leading-snug">{t('seller.connectingSbi')}</h4>
                   <p className="text-xs text-[#666666] mt-1 italic animate-pulse">State Bank of India से जुड़ रहे हैं...</p>
                 </div>
                 <div className="w-full max-w-[200px] h-1.5 bg-[#E2D7CB] rounded-full overflow-hidden">
@@ -1282,19 +1296,19 @@ const Dashboard = () => {
                 <div className="w-16 h-16 rounded-full bg-emerald-500 text-white flex items-center justify-center text-3xl shadow-lg">
                   <FiCheck className="stroke-[3]" />
                 </div>
-                <h3 className="font-serif text-2xl font-bold text-[#2D5A3D]">Transfer Successful!</h3>
+                <h3 className="font-serif text-2xl font-bold text-[#2D5A3D]">{t('seller.transSuccessful')}</h3>
                 <p className="text-sm text-[#1A1A1A] max-w-xs leading-relaxed">
                   Money sent. Your bank will send SMS verification shortly.
                 </p>
                 <div className="w-full bg-[#EBF5EE] text-[#2D5A3D] text-xs font-bold p-3.5 rounded-xl border border-[#2D5A3D]/10 font-mono mt-2">
-                  SBI REF ID: SBIN{Math.floor(1000000000 + Math.random() * 9000000000)}
+                  {t('seller.sbiRef')}: SBIN{Math.floor(1000000000 + Math.random() * 9000000000)}
                 </div>
 
                 <button 
                   onClick={() => setShowWithdrawModal(false)}
                   className="karigar-btn-primary w-full justify-center py-3.5 mt-4 shadow-md cursor-pointer"
                 >
-                  Done / पूरा हुआ
+                  {t('seller.doneBtn')}
                 </button>
               </div>
             )}
@@ -1332,9 +1346,9 @@ const Dashboard = () => {
               {lowInternetMode ? (
                 <div className="relative flex flex-col items-center gap-3 text-center max-w-md p-6 bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 z-20">
                   <FiVolume2 className="w-12 h-12 text-[#D4AF37] animate-bounce" />
-                  <span className="text-xs uppercase tracking-wider text-[#D4AF37] font-extrabold">Low Internet Mode Active / धीमा इंटरनेट</span>
+                  <span className="text-xs uppercase tracking-wider text-[#D4AF37] font-extrabold">{t('seller.lowInternet')}</span>
                   <p className="text-sm text-gray-200">
-                    Streaming audio-only to save mobile data charges. Hindi narration playing.
+                    {t('seller.lowInternetSub')}
                   </p>
                 </div>
               ) : (
@@ -1402,7 +1416,7 @@ const Dashboard = () => {
                   }}
                   className="px-5 py-2.5 bg-[#2D5A3D] hover:bg-[#22452E] text-white rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer"
                 >
-                  Mark Lesson Done / पूरा हुआ
+                  {t('seller.markDone')}
                 </button>
               </div>
             </div>

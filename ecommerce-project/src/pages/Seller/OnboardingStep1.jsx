@@ -4,10 +4,12 @@ import { FiGlobe, FiBell, FiPlay, FiX } from 'react-icons/fi';
 import SellerLayout from './components/SellerLayout';
 import VoiceGuidance from './components/VoiceGuidance';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const OnboardingStep1 = () => {
   const navigate = useNavigate();
   const { isLoggedIn, user } = useAuth();
+  const { language, changeLanguage, t } = useLanguage();
   const [fullName, setFullName] = useState(() => localStorage.getItem('karigar_temp_name') || '');
   const [showVideoModal, setShowVideoModal] = useState(false);
 
@@ -22,20 +24,18 @@ const OnboardingStep1 = () => {
   }, [fullName]);
 
   const handleVoiceInput = (text) => {
-    // If the text contains navigation commands
     const cleanText = text.toLowerCase();
-    if (cleanText.includes('aage') || cleanText.includes('next') || cleanText.includes('done') || cleanText.includes('proceed')) {
+    if (cleanText.includes('aage') || cleanText.includes('next') || cleanText.includes('done') || cleanText.includes('proceed') || cleanText.includes('ಮುಂದೆ')) {
       if (fullName.trim()) {
         navigate('/seller/onboarding-2');
       } else {
-        setFullName("Radha Devi"); // default fallback
+        setFullName("Radha Devi");
       }
     } else {
-      // Treat text as their name
-      // Remove noise phrases
       const name = text.replace(/my name is/i, '')
                        .replace(/मेरा नाम है/g, '')
                        .replace(/मेरा नाम/g, '')
+                       .replace(/ನನ್ನ ಹೆಸರು/g, '')
                        .trim();
       setFullName(name);
     }
@@ -44,7 +44,7 @@ const OnboardingStep1 = () => {
   const handleNext = (e) => {
     e.preventDefault();
     if (!fullName.trim()) {
-      setFullName("Radha Devi"); // default fallback
+      setFullName("Radha Devi");
     }
     navigate('/seller/onboarding-2');
   };
@@ -57,9 +57,22 @@ const OnboardingStep1 = () => {
           KariGhar
         </span>
         <div className="flex items-center gap-6 text-[#1A1A1A]">
-          <button className="text-xl hover:text-[#8B3A1A]" title="Language Switcher">
-            <FiGlobe />
-          </button>
+          {/* Language Selector Dropdown */}
+          <div className="flex items-center gap-1 bg-[#FDF8F4] border border-[#E5DCD0] rounded-xl px-2 py-1 shadow-sm">
+            <FiGlobe className="text-[#8B3A1A] w-4 h-4" />
+            <select
+              value={language}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="bg-transparent border-none text-xs font-bold text-[#1A1A1A] outline-none cursor-pointer p-0"
+              title={t('nav.languageSelect')}
+              style={{ appearance: 'none', WebkitAppearance: 'none' }}
+            >
+              <option value="en">EN</option>
+              <option value="hi">हिन्दी</option>
+              <option value="kn">ಕನ್ನಡ</option>
+            </select>
+          </div>
+
           <button className="text-xl hover:text-[#8B3A1A] relative" title="Notifications">
             <FiBell />
             <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-[#8B3A1A]"></span>
@@ -81,31 +94,31 @@ const OnboardingStep1 = () => {
             </div>
 
             <p className="text-[#8B3A1A] text-lg md:text-xl italic font-semibold karigar-serif">
-              "Namaste behen, let's start your journey."
+              {t('sellerOnboarding.namasteSister')}
             </p>
             <h2 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] karigar-serif">
-              Tell us your name
+              {t('sellerOnboarding.tellName')}
             </h2>
 
             {/* Input Card */}
             <form onSubmit={handleNext} className="karigar-card flex flex-col gap-6 mt-2">
               <div className="flex flex-col gap-2">
-                <label className="text-lg font-bold text-[#8B3A1A]">Full Name</label>
+                <label className="text-lg font-bold text-[#8B3A1A]">{t('sellerOnboarding.fullName')}</label>
                 <input 
                   type="text" 
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="E.g. Radha Devi"
+                  placeholder={t('sellerOnboarding.placeholderName')}
                   className="karigar-input"
                   required
                 />
               </div>
               <p className="text-sm text-[#666666] italic bg-[#FFFDFB] p-3 rounded-xl border border-[#E5DCD0]/40">
-                Speak clearly into the microphone or type your name using the keyboard.
+                {t('sellerOnboarding.speakOrType')}
               </p>
 
               <button type="submit" className="karigar-btn-primary self-start px-12 mt-2">
-                Next &rarr;
+                {t('sellerOnboarding.next')}
               </button>
             </form>
           </div>
@@ -114,7 +127,7 @@ const OnboardingStep1 = () => {
           <div className="flex flex-col gap-3 mt-4">
             <div 
               onClick={() => setShowVideoModal(true)}
-              className="video-thumbnail-container relative w-full max-w-sm h-36 bg-[#E5DCD0] flex items-center justify-center border-2 border-white/80 rounded-2xl"
+              className="video-thumbnail-container relative w-full max-w-sm h-36 bg-[#E5DCD0] flex items-center justify-center border-2 border-white/80 rounded-2xl cursor-pointer"
             >
               <img 
                 src="/images/meera-devi-potter.png" 
@@ -125,7 +138,7 @@ const OnboardingStep1 = () => {
                 <FiPlay className="ml-1" />
               </div>
               <span className="absolute bottom-3 left-3 bg-[#1A1A1A]/80 text-white text-xs px-3 py-1.5 rounded-full font-bold">
-                Need help? Watch: How to use KariGhar
+                {t('sellerOnboarding.needHelpWatch')}
               </span>
             </div>
           </div>
@@ -133,7 +146,7 @@ const OnboardingStep1 = () => {
           {/* Voice Guidance Saree Bubble */}
           <div className="mt-4">
             <VoiceGuidance 
-              text="Let's create your profile. Please tell your full name." 
+              text={t('sellerOnboarding.voiceGuidanceStep1')} 
               showDots={true}
             />
           </div>
@@ -162,7 +175,7 @@ const OnboardingStep1 = () => {
             >
               <FiX />
             </button>
-            <h3 className="text-2xl font-bold text-[#8B3A1A] karigar-serif mb-4">How to use KariGhar</h3>
+            <h3 className="text-2xl font-bold text-[#8B3A1A] karigar-serif mb-4">{t('sellerOnboarding.needHelpWatch')}</h3>
             <div className="aspect-video bg-black rounded-2xl flex items-center justify-center text-white relative overflow-hidden">
               {/* Simulated video playback */}
               <iframe 

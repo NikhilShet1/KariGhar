@@ -3,8 +3,10 @@ import { useCart } from '../../context/CartContext';
 import { formatPrice } from '../../utils/helpers';
 import { FiX, FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiCheckCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { useLanguage } from '../../context/LanguageContext';
 
 const CartDrawer = () => {
+  const { t } = useLanguage();
   const { 
     cartItems, 
     isCartOpen, 
@@ -89,7 +91,7 @@ const CartDrawer = () => {
         }}>
           <h3 style={{ fontSize: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <FiShoppingBag style={{ color: 'var(--primary-terracotta)' }} />
-            {checkoutStep === 'success' ? 'Order Complete' : 'Your KariGhar Cart'}
+            {checkoutStep === 'success' ? t('cart.orderComplete') : t('cart.yourCart')}
           </h3>
           {checkoutStep !== 'loading' && (
             <button 
@@ -126,14 +128,14 @@ const CartDrawer = () => {
                   gap: '16px'
                 }}>
                   <FiShoppingBag size={48} style={{ color: 'var(--cream-border)', marginBottom: '8px' }} />
-                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '18px', color: 'var(--warm-charcoal)' }}>Your cart is empty.</p>
-                  <p style={{ fontSize: '14px' }}>Fill your home with authentic, beautiful, hand-thrown creations from Kutch, Kashmir, and Varanasi.</p>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '18px', color: 'var(--warm-charcoal)' }}>{t('cart.cartEmpty')}</p>
+                  <p style={{ fontSize: '14px' }}>{t('cart.cartEmptySub')}</p>
                   <button 
                     onClick={closeCart} 
                     className="btn-primary" 
                     style={{ marginTop: '16px', padding: '10px 20px', fontSize: '13px' }}
                   >
-                    Start Exploring
+                    {t('cart.startExploring')}
                   </button>
                 </div>
               ) : (
@@ -232,12 +234,12 @@ const CartDrawer = () => {
               }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'var(--warm-charcoal-muted)' }}>Cart Subtotal</span>
+                    <span style={{ color: 'var(--warm-charcoal-muted)' }}>{t('cart.subtotal')}</span>
                     <span style={{ fontWeight: '500' }}>{formatPrice(subtotal)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'var(--warm-charcoal-muted)' }}>Eco-Packaging & Shipping</span>
-                    <span style={{ fontWeight: '500' }}>{shippingFee === 0 ? 'Free' : formatPrice(shippingFee)}</span>
+                    <span style={{ color: 'var(--warm-charcoal-muted)' }}>{t('cart.shipping')}</span>
+                    <span style={{ fontWeight: '500' }}>{shippingFee === 0 ? t('cart.free') : formatPrice(shippingFee)}</span>
                   </div>
                   <div style={{
                     display: 'flex',
@@ -249,7 +251,7 @@ const CartDrawer = () => {
                     borderTop: '1px solid var(--cream-border)',
                     color: 'var(--warm-charcoal)'
                   }}>
-                    <span>Total Amount</span>
+                    <span>{t('cart.total')}</span>
                     <span style={{ color: 'var(--primary-terracotta)' }}>{formatPrice(totalAmount)}</span>
                   </div>
                 </div>
@@ -264,11 +266,11 @@ const CartDrawer = () => {
                   textAlign: 'center',
                   fontWeight: '500'
                 }}>
-                  🌱 KariGhar Pledge: Shipped in 100% biodegradable husks & hand-drawn wood chips.
+                  {t('cart.pledgeText')}
                 </div>
 
                 <button onClick={handleCheckout} className="btn-primary" style={{ justifyContent: 'center', width: '100%', padding: '16px' }}>
-                  Place Order • {formatPrice(totalAmount)}
+                  {t('cart.placeOrder')} • {formatPrice(totalAmount)}
                 </button>
               </div>
             )}
@@ -303,9 +305,9 @@ const CartDrawer = () => {
             `}</style>
             
             <div>
-              <h3 style={{ marginBottom: '8px' }}>Securing Artisan Transaction</h3>
+              <h3 style={{ marginBottom: '8px' }}>{t('cart.securingTransaction')}</h3>
               <p style={{ color: 'var(--warm-charcoal-muted)', fontSize: '14px' }}>
-                Connecting directly with rural banking networks to support weavers & potters. Please do not close.
+                {t('cart.securingSub')}
               </p>
             </div>
           </div>
@@ -339,13 +341,13 @@ const CartDrawer = () => {
 
             <div>
               <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--primary-terracotta)', fontSize: '26px', marginBottom: '12px' }}>
-                Namaste. Order Placed!
+                {t('cart.orderPlacedSuccess')}
               </h2>
               <p style={{ fontSize: '15px', color: 'var(--warm-charcoal)', fontWeight: '500', marginBottom: '8px' }}>
-                Your collector receipt has been created.
+                {t('cart.receiptCreated')}
               </p>
               <p style={{ fontSize: '14px', color: 'var(--warm-charcoal-muted)' }}>
-                Master artisans are preparing your unique package. Each item will be carefully nestled in organic wheat-husks and sustainable banana-leaves.
+                {t('cart.preparingPackage')}
               </p>
             </div>
 
@@ -357,11 +359,11 @@ const CartDrawer = () => {
               fontSize: '13px',
               width: '100%'
             }}>
-              <span style={{ fontWeight: '600', color: 'var(--primary-terracotta)' }}>100% of profits</span> are dispatched directly to the weaver/potter's cooperative within 24 hours.
+              {t('cart.profitInfo')}
             </div>
 
             <button onClick={handleSuccessClose} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-              Return to KariGhar
+              {t('cart.returnBtn')}
             </button>
           </div>
         )}

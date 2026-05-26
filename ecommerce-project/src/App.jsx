@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { ProductProvider } from './context/ProductContext';
 import { CartProvider } from './context/CartContext';
+import { LanguageProvider } from './context/LanguageContext';
 
 // Shell Layout Components
 import Navbar from './components/Navbar/Navbar';
@@ -45,37 +46,39 @@ const AppContent = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <ProductProvider>
-          <CartProvider>
-            
-            {/* Global micro-interactive Toast alerts */}
-            <Toaster 
-              position="bottom-left"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: 'var(--cream-card)',
-                  color: 'var(--warm-charcoal)',
-                  border: '1px solid var(--cream-border)',
-                  fontFamily: 'var(--font-sans)',
-                  borderRadius: 'var(--border-radius-md)',
-                  boxShadow: 'var(--shadow-premium)'
-                },
-                success: {
-                  iconTheme: {
-                    primary: 'var(--primary-terracotta)',
-                    secondary: 'var(--white-pure)',
+      <LanguageProvider>
+        <AuthProvider>
+          <ProductProvider>
+            <CartProvider>
+              
+              {/* Global micro-interactive Toast alerts */}
+              <Toaster 
+                position="bottom-left"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: 'var(--cream-card)',
+                    color: 'var(--warm-charcoal)',
+                    border: '1px solid var(--cream-border)',
+                    fontFamily: 'var(--font-sans)',
+                    borderRadius: 'var(--border-radius-md)',
+                    boxShadow: 'var(--shadow-premium)'
                   },
-                }
-              }}
-            />
-            
-            <AppContent />
+                  success: {
+                    iconTheme: {
+                      primary: 'var(--primary-terracotta)',
+                      secondary: 'var(--white-pure)',
+                    },
+                  }
+                }}
+              />
+              
+              <AppContent />
 
-          </CartProvider>
-        </ProductProvider>
-      </AuthProvider>
+            </CartProvider>
+          </ProductProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   );
 };

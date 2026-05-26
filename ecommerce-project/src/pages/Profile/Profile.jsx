@@ -5,11 +5,13 @@ import { useProducts } from '../../context/ProductContext';
 import { formatPrice } from '../../utils/helpers';
 import { FiUser, FiMail, FiPhone, FiTag, FiEdit2, FiLogOut, FiHeart, FiStar } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn, logout } = useAuth();
   const { products } = useProducts();
+  const { t } = useLanguage();
 
   // Editing States
   const [isEditing, setIsEditing] = useState(false);
@@ -20,9 +22,9 @@ const Profile = () => {
   if (!isLoggedIn) {
     return (
       <div className="container text-center" style={{ padding: '80px 0', animation: 'fadeIn 0.6s ease-out' }}>
-        <h2 className="serif-title" style={{ fontSize: '32px', marginBottom: '16px' }}>Namaste, Collector</h2>
-        <p style={{ color: 'var(--warm-charcoal-muted)', marginBottom: '24px' }}>Please log in or register to view your KariGhar dashboard and collector wishlist.</p>
-        <Link to="/login" className="btn-primary">Sign In / Register</Link>
+        <h2 className="serif-title" style={{ fontSize: '32px', marginBottom: '16px' }}>{t('login.title')}</h2>
+        <p style={{ color: 'var(--warm-charcoal-muted)', marginBottom: '24px' }}>{t('login.sub')}</p>
+        <Link to="/login" className="btn-primary">{t('login.signInRegister')}</Link>
       </div>
     );
   }
@@ -86,7 +88,7 @@ const Profile = () => {
 
           <div>
             <h2 className="serif-title" style={{ fontSize: '24px' }}>{user.name}</h2>
-            <span className="badge-handmade" style={{ marginTop: '8px' }}>{user.role} Partner</span>
+            <span className="badge-handmade" style={{ marginTop: '8px' }}>{user.role} {t('profile.partner')}</span>
           </div>
 
           <div style={{
@@ -107,7 +109,7 @@ const Profile = () => {
               <FiPhone style={{ color: 'var(--primary-terracotta)' }} /> <span>{user.phone}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--warm-charcoal)' }}>
-              <FiTag style={{ color: 'var(--primary-terracotta)' }} /> <span>Collector ID: {user.id}</span>
+              <FiTag style={{ color: 'var(--primary-terracotta)' }} /> <span>{t('profile.collectorId')}: {user.id}</span>
             </div>
           </div>
 
@@ -116,7 +118,7 @@ const Profile = () => {
             className="btn-secondary" 
             style={{ width: '100%', justifyContent: 'center', borderColor: 'var(--cream-border)', color: 'var(--warm-charcoal-muted)' }}
           >
-            <FiLogOut /> Log Out
+            <FiLogOut /> {t('nav.signOut')}
           </button>
         </div>
 
@@ -132,10 +134,10 @@ const Profile = () => {
             boxShadow: 'var(--shadow-card)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h3 className="serif-title" style={{ fontSize: '22px' }}>Account Settings</h3>
+              <h3 className="serif-title" style={{ fontSize: '22px' }}>{t('profile.accountSettings')}</h3>
               {!isEditing && (
                 <button onClick={() => setIsEditing(true)} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '13px' }}>
-                  <FiEdit2 /> Edit Profile
+                  <FiEdit2 /> {t('profile.editProfile')}
                 </button>
               )}
             </div>
@@ -144,7 +146,7 @@ const Profile = () => {
               <form onSubmit={handleProfileSave} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div className="auth-input-group">
-                    <label>Full Name</label>
+                    <label>{t('login.fullName')}</label>
                     <input 
                       type="text" 
                       value={editName}
@@ -154,7 +156,7 @@ const Profile = () => {
                     />
                   </div>
                   <div className="auth-input-group">
-                    <label>Phone Number</label>
+                    <label>{t('login.phoneNumber')}</label>
                     <input 
                       type="tel" 
                       value={editPhone}
@@ -166,7 +168,7 @@ const Profile = () => {
                 </div>
 
                 <div className="auth-input-group">
-                  <label>Email Address</label>
+                  <label>{t('login.emailAddress')}</label>
                   <input 
                     type="email" 
                     value={editEmail}
@@ -177,14 +179,14 @@ const Profile = () => {
                 </div>
 
                 <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
-                  <button type="submit" className="btn-primary" style={{ padding: '10px 24px' }}>Save Changes</button>
-                  <button type="button" onClick={() => setIsEditing(false)} className="btn-secondary" style={{ padding: '10px 24px' }}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ padding: '10px 24px' }}>{t('profile.saveChanges')}</button>
+                  <button type="button" onClick={() => setIsEditing(false)} className="btn-secondary" style={{ padding: '10px 24px' }}>{t('profile.cancel')}</button>
                 </div>
               </form>
             ) : (
               <div style={{ fontSize: '14px', color: 'var(--warm-charcoal-muted)' }}>
-                <p style={{ marginBottom: '8px' }}>Welcome to your KariGhar collector profile. Here you can manage your verified identity details.</p>
-                <p>Status: <span style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>Active Collector Verification</span></p>
+                <p style={{ marginBottom: '8px' }}>{t('profile.welcomeProfile')}</p>
+                <p>{t('profile.statusLabel')} <span style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>{t('profile.activeVerification')}</span></p>
               </div>
             )}
           </div>
@@ -199,7 +201,7 @@ const Profile = () => {
           }}>
             <h3 className="serif-title" style={{ fontSize: '22px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <FiHeart style={{ fill: 'var(--primary-terracotta)', color: 'var(--primary-terracotta)' }} />
-              Collector Wishlist
+              {t('profile.wishlistTitle')}
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>

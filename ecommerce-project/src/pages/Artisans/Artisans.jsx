@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import '../../styles/artisans.css';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Room database with mock participant arrays and pre-populated codes
 const INITIAL_ROOMS = {
@@ -66,6 +67,7 @@ const TIPS = [
 
 const Artisans = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [rooms, setRooms] = useState(INITIAL_ROOMS);
   const [activeRoomId, setActiveRoomId] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -224,7 +226,7 @@ const Artisans = () => {
       {/* Left Sidebar: Voice Rooms */}
       <aside className="w-80 bg-surface-container-low border-r border-outline-variant p-6 flex flex-col gap-6 overflow-y-auto z-10 shrink-0">
         <div className="mb-1">
-          <h2 className="font-headline-md text-headline-md text-on-surface-variant font-bold">Live Rooms</h2>
+          <h2 className="font-headline-md text-headline-md text-on-surface-variant font-bold">{t('artisans.liveRooms')}</h2>
           <div className="h-1 w-12 bg-primary mt-2 rounded-full"></div>
         </div>
 
@@ -235,7 +237,7 @@ const Artisans = () => {
             className="flex items-center justify-center gap-3 py-3.5 px-4 bg-primary-container text-on-primary-container rounded-xl shadow-lg transition-transform hover:scale-[1.02] text-left w-full cursor-pointer"
           >
             <span className="material-symbols-outlined text-[24px] leading-none">add_circle</span>
-            <span className="font-semibold text-[15px] leading-none">Create Room</span>
+            <span className="font-semibold text-[15px] leading-none">{t('artisans.createRoom')}</span>
           </button>
 
           <button
@@ -243,7 +245,7 @@ const Artisans = () => {
             className="flex items-center justify-center gap-3 py-3.5 px-4 bg-transparent border-2 border-primary text-primary rounded-xl transition-all hover:bg-primary/5 text-left w-full cursor-pointer"
           >
             <span className="material-symbols-outlined text-[24px] leading-none">vpn_key</span>
-            <span className="font-semibold text-[15px] leading-none">Join Room</span>
+            <span className="font-semibold text-[15px] leading-none">{t('artisans.joinRoom')}</span>
           </button>
         </div>
 
@@ -271,7 +273,7 @@ const Artisans = () => {
                 <div className="min-w-0 flex-1">
                   <span className="font-bold block text-[17px] leading-snug truncate">{room.name}</span>
                   <span className={`text-sm block mt-1 font-bold ${isActive ? 'text-white/90' : 'text-primary'}`}>
-                    {room.activeCount} Artisans Active • Code: {room.code}
+                    {room.activeCount} {t('artisans.activeLabel')} • Code: {room.code}
                   </span>
                 </div>
               </button>
@@ -282,7 +284,7 @@ const Artisans = () => {
         {/* Tip of the Day Box */}
         <div className="mt-auto pt-4">
           <div className="bg-secondary-container/20 p-4 rounded-xl border border-secondary/20">
-            <p className="text-[13px] text-secondary font-bold uppercase tracking-wider mb-2">Tip of the Day</p>
+            <p className="text-[13px] text-secondary font-bold uppercase tracking-wider mb-2">{t('artisans.tipOfDay')}</p>
             <p className="font-body-md text-on-surface-variant italic text-base leading-relaxed">
               "{TIPS[tipIndex]}"
             </p>
@@ -304,7 +306,7 @@ const Artisans = () => {
             </div>
 
             <div>
-              <h1 className="font-headline-lg text-headline-lg text-primary font-bold">KariGhar Community Hearth</h1>
+              <h1 className="font-headline-lg text-headline-lg text-primary font-bold">{t('artisans.hearthTitle')}</h1>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mt-4">
@@ -313,8 +315,8 @@ const Artisans = () => {
                 className="flex flex-col items-center justify-center p-6 bg-primary-container text-on-primary-container rounded-xl shadow-md transition-all hover:scale-[1.02] cursor-pointer border border-transparent"
               >
                 <span className="material-symbols-outlined text-[36px] mb-2">add_circle</span>
-                <span className="font-bold text-[16px] leading-none">Create Room</span>
-                <span className="text-sm text-on-primary-container/90 text-center mt-2 leading-relaxed">Start a new live session and generate a room code.</span>
+                <span className="font-bold text-[16px] leading-none">{t('artisans.createRoom')}</span>
+                <span className="text-sm text-on-primary-container/90 text-center mt-2 leading-relaxed">{t('artisans.createRoomSub')}</span>
               </button>
 
               <button
@@ -322,8 +324,8 @@ const Artisans = () => {
                 className="flex flex-col items-center justify-center p-6 bg-white border border-outline-variant text-primary rounded-xl transition-all hover:scale-[1.02] hover:bg-primary/5 cursor-pointer shadow-sm"
               >
                 <span className="material-symbols-outlined text-[36px] mb-2">vpn_key</span>
-                <span className="font-bold text-[16px] text-on-surface leading-none">Join Room</span>
-                <span className="text-sm text-on-surface-variant text-center mt-2 leading-relaxed">Enter a 4-digit code to connect to an active room.</span>
+                <span className="font-bold text-[16px] text-on-surface leading-none">{t('artisans.joinRoom')}</span>
+                <span className="text-sm text-on-surface-variant text-center mt-2 leading-relaxed">{t('artisans.joinRoomSub')}</span>
               </button>
             </div>
           </div>
@@ -335,14 +337,14 @@ const Artisans = () => {
           <div className="px-10 py-6 border-b border-outline-variant bg-white/50 backdrop-blur-sm flex justify-between items-center z-10 shrink-0">
             <div>
               <h1 className="font-headline-lg text-headline-lg text-primary font-bold">{activeRoom.name}</h1>
-              <p className="text-lg text-primary font-bold mt-1.5">{activeRoom.activeCount} Artisans Active</p>
+              <p className="text-lg text-primary font-bold mt-1.5">{activeRoom.activeCount} {t('artisans.activeLabel')}</p>
             </div>
             <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full shrink-0">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
               </span>
-              <span className="text-[10px] text-primary uppercase font-bold tracking-widest leading-none">Live Now</span>
+              <span className="text-[10px] text-primary uppercase font-bold tracking-widest leading-none">{t('artisans.liveNow')}</span>
             </div>
           </div>
 
@@ -356,7 +358,7 @@ const Artisans = () => {
               
               {isEditingTopic ? (
                 <div className="flex-1">
-                  <span className="text-[11px] font-bold tracking-wider uppercase text-primary/80 block mb-1">Edit Discussion Topic</span>
+                  <span className="text-[11px] font-bold tracking-wider uppercase text-primary/80 block mb-1">{t('artisans.editTopic')}</span>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -384,20 +386,20 @@ const Artisans = () => {
                       }}
                       className="px-3.5 py-1.5 bg-primary text-white font-bold text-xs rounded-lg hover:brightness-95 transition-all shadow-md cursor-pointer shrink-0"
                     >
-                      Save
+                      {t('artisans.save')}
                     </button>
                     <button
                       onClick={() => setIsEditingTopic(false)}
                       className="px-3.5 py-1.5 bg-white border border-outline-variant text-on-surface-variant font-bold text-xs rounded-lg hover:bg-surface-container-low transition-all cursor-pointer shrink-0"
                     >
-                      Cancel
+                      {t('artisans.cancel')}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="flex-1 flex justify-between items-center gap-4">
                   <div>
-                    <span className="text-[11px] font-bold tracking-wider uppercase text-primary/80 block mb-0.5">Current Discussion Topic</span>
+                    <span className="text-[11px] font-bold tracking-wider uppercase text-primary/80 block mb-0.5">{t('artisans.currentTopic')}</span>
                     <p className="text-on-surface font-semibold text-lg leading-relaxed">{activeRoom.description}</p>
                   </div>
                   <button
@@ -406,10 +408,10 @@ const Artisans = () => {
                       setIsEditingTopic(true);
                     }}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-outline-variant hover:border-primary/40 text-on-surface-variant hover:text-primary rounded-lg font-bold text-xs transition-all shadow-sm shrink-0 cursor-pointer"
-                    title="Edit Discussion Topic"
+                    title={t('artisans.editTopic')}
                   >
                     <span className="material-symbols-outlined text-[16px] leading-none">edit</span>
-                    <span>Edit Topic</span>
+                    <span>{t('artisans.editTopicBtn')}</span>
                   </button>
                 </div>
               )}
@@ -428,10 +430,10 @@ const Artisans = () => {
                     />
                     <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-primary text-white px-3.5 py-1 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1 whitespace-nowrap z-30">
                       <span className="material-symbols-outlined text-[12px] leading-none">graphic_eq</span>
-                      Speaking...
+                      {t('artisans.speaking')}
                     </div>
                   </div>
-                  <span className="font-semibold text-on-surface text-base">You (Artisan)</span>
+                  <span className="font-semibold text-on-surface text-base">{t('artisans.youArtisan')}</span>
                 </div>
               )}
 
@@ -450,7 +452,7 @@ const Artisans = () => {
                       {shouldShowAsSpeaking && (
                         <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-primary text-white px-3.5 py-1 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1 whitespace-nowrap z-30">
                           <span className="material-symbols-outlined text-[12px] leading-none">graphic_eq</span>
-                          Speaking...
+                          {t('artisans.speaking')}
                         </div>
                       )}
                     </div>
@@ -466,7 +468,7 @@ const Artisans = () => {
                 <div className="w-32 h-32 md:w-36 md:h-36 mb-5 rounded-full border-2 border-dashed border-outline-variant flex items-center justify-center bg-surface-container-low text-outline group-hover:bg-surface-container-high transition-colors shadow-sm">
                   <span className="material-symbols-outlined text-[36px] leading-none">person_add</span>
                 </div>
-                <span className="font-semibold text-outline text-base">Invite</span>
+                <span className="font-semibold text-outline text-base">{t('artisans.invite')}</span>
               </div>
 
             </div>
@@ -490,7 +492,7 @@ const Artisans = () => {
                 </span>
               </button>
               <span className="font-semibold text-on-surface-variant hidden lg:block text-sm">
-                {isMuted ? 'Muted' : 'Microphone Active'}
+                {isMuted ? t('artisans.muted') : t('artisans.micActive')}
               </span>
             </div>
 
@@ -501,7 +503,7 @@ const Artisans = () => {
                 ? 'text-error bg-red-50 border-red-200 animate-pulse'
                 : 'text-primary bg-white/95 border-outline-variant/40'
                 }`}>
-                {isSpeaking ? 'YOU ARE SPEAKING' : 'Hold to Speak'}
+                {isSpeaking ? t('artisans.youAreSpeaking') : t('artisans.holdToSpeak')}
               </div>
 
               {/* PTT Button */}
@@ -539,7 +541,7 @@ const Artisans = () => {
                 title="Leave Room"
               >
                 <span className="material-symbols-outlined text-[20px] leading-none">logout</span>
-                <span>Leave</span>
+                <span>{t('artisans.leave')}</span>
               </button>
             </div>
 
@@ -555,14 +557,14 @@ const Artisans = () => {
       {showCreateModal && (
         <div className="fixed inset-0 bg-on-surface/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className="bg-background border border-outline-variant rounded-2xl p-6 w-full max-w-sm shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="font-headline-md text-headline-md text-primary font-bold mb-1">Create Live Room</h3>
+            <h3 className="font-headline-md text-headline-md text-primary font-bold mb-1">{t('artisans.createLiveRoom')}</h3>
             <p className="text-on-surface-variant text-sm mb-5 leading-relaxed">
-              Name your room. A secure 4-digit entry code will be generated automatically for participants.
+              {t('artisans.createRoomDesc')}
             </p>
 
             <form onSubmit={handleCreateSubmit}>
               <div className="flex flex-col gap-2 mb-6">
-                <label className="text-xs font-semibold uppercase tracking-wider text-outline text-left">Room Name</label>
+                <label className="text-xs font-semibold uppercase tracking-wider text-outline text-left">{t('artisans.roomName')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Weaving Circle"
@@ -580,13 +582,13 @@ const Artisans = () => {
                   onClick={() => { setShowCreateModal(false); setRoomNameInput(''); }}
                   className="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-semibold text-sm hover:bg-surface-container-low transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('artisans.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:brightness-95 transition-all shadow-md cursor-pointer"
                 >
-                  Create Room
+                  {t('artisans.createRoom')}
                 </button>
               </div>
             </form>
@@ -598,9 +600,9 @@ const Artisans = () => {
       {showJoinModal && (
         <div className="fixed inset-0 bg-on-surface/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className="bg-background border border-outline-variant rounded-2xl p-6 w-full max-w-sm shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="font-headline-md text-headline-md text-primary font-bold mb-1">Join Live Room</h3>
+            <h3 className="font-headline-md text-headline-md text-primary font-bold mb-1">{t('artisans.joinLiveRoom')}</h3>
             <p className="text-on-surface-variant text-sm mb-5 leading-relaxed">
-              Enter the 4-digit code provided by the room host to join their active voice stream.
+              {t('artisans.joinRoomDesc')}
             </p>
 
             <form onSubmit={handleJoinSubmit}>
@@ -624,13 +626,13 @@ const Artisans = () => {
                   onClick={() => { setShowJoinModal(false); setRoomCodeInput(''); }}
                   className="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-semibold text-sm hover:bg-surface-container-low transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('artisans.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:brightness-95 transition-all shadow-md cursor-pointer"
                 >
-                  Join Room
+                  {t('artisans.joinRoom')}
                 </button>
               </div>
             </form>

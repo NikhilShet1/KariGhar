@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useProducts } from '../../context/ProductContext';
 import { formatPrice } from '../../utils/helpers';
 import '../../styles/navbar.css';
+import { useLanguage } from '../../context/LanguageContext';
 
 // React Icons
 import { FiSearch, FiShoppingCart, FiGlobe, FiUser, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
@@ -15,6 +16,7 @@ const Navbar = () => {
   const { toggleCart, totalItemsCount } = useCart();
   const { user, isLoggedIn, logout } = useAuth();
   const { products } = useProducts();
+  const { language, changeLanguage, t } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -82,17 +84,17 @@ const Navbar = () => {
           <ul className={`nav-menu ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
             <li>
               <NavLink to="/" onClick={() => setIsMobileMenuOpen(false)} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-                Our Story
+                {t('nav.story')}
               </NavLink>
             </li>
             <li>
               <NavLink to="/collections" onClick={() => setIsMobileMenuOpen(false)} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-                Collections
+                {t('nav.collections')}
               </NavLink>
             </li>
             <li>
               <NavLink to="/artisans" onClick={() => setIsMobileMenuOpen(false)} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-                Artisans
+                {t('nav.artisans')}
               </NavLink>
             </li>
           </ul>
@@ -104,7 +106,7 @@ const Navbar = () => {
             <FiSearch size={18} />
             <input
               type="text"
-              placeholder="Search crafts..."
+              placeholder={t('nav.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
@@ -142,10 +144,21 @@ const Navbar = () => {
         {/* Right Action Icons */}
         <div className="nav-actions">
 
-          {/* Language Toggle */}
-          <button className="nav-btn-icon" onClick={handleLanguageToggle} title="Language Select">
-            <FiGlobe />
-          </button>
+          {/* Language Selector Dropdown */}
+          <div className="flex items-center gap-1 bg-[#FDF8F4] border border-[#E5DCD0] rounded-xl px-2 py-1 shadow-sm">
+            <FiGlobe className="text-[#8B3A1A] w-4 h-4" />
+            <select
+              value={language}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="bg-transparent border-none text-xs font-bold text-[#1A1A1A] outline-none cursor-pointer p-0"
+              title={t('nav.languageSelect')}
+              style={{ fontFamily: 'var(--font-sans)', appearance: 'none', WebkitAppearance: 'none' }}
+            >
+              <option value="en">EN</option>
+              <option value="hi">हिन्दी</option>
+              <option value="kn">ಕನ್ನಡ</option>
+            </select>
+          </div>
 
           {/* Cart Icon with badge counts */}
           <button className="nav-btn-icon" onClick={toggleCart} title="Shopping Cart">

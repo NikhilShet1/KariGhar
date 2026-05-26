@@ -29,6 +29,17 @@
   --border-radius-sm: 8px;
 }
 
+/* Multilingual Font Families Override */
+html[lang="hi"] {
+  --font-serif: 'Noto Serif Devanagari', serif !important;
+  --font-sans: 'Noto Sans Devanagari', sans-serif !important;
+}
+
+html[lang="kn"] {
+  --font-serif: 'Noto Serif Kannada', serif !important;
+  --font-sans: 'Noto Sans Kannada', sans-serif !important;
+}
+
 /* Base Resets & Typography */
 * {
   box-sizing: border-box;

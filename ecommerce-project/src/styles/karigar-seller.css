@@ -235,3 +235,18 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   font-size: 20px;
 }
+
+/* Seller Multi-lingual Typography overrides */
+html[lang="hi"] .karigar-app {
+  font-family: 'Noto Sans Devanagari', sans-serif !important;
+}
+html[lang="hi"] .karigar-serif {
+  font-family: 'Noto Serif Devanagari', serif !important;
+}
+
+html[lang="kn"] .karigar-app {
+  font-family: 'Noto Sans Kannada', sans-serif !important;
+}
+html[lang="kn"] .karigar-serif {
+  font-family: 'Noto Serif Kannada', serif !important;
+}

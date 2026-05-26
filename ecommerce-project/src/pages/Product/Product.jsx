@@ -6,12 +6,14 @@ import { formatPrice } from '../../utils/helpers';
 import { FiStar, FiShoppingCart, FiHeart, FiX, FiInfo } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import '../../styles/product.css';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Product = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { getProductById, getArtisanById, getReviewsForProduct, addReview, products } = useProducts();
   const { addToCart } = useCart();
+  const { t } = useLanguage();
 
   const product = getProductById(id);
   const artisan = product ? getArtisanById(product.artisanId) : null;
@@ -38,22 +40,22 @@ const Product = () => {
   if (!product) {
     return (
       <div style={{ padding: '80px 0', textAlignment: 'center' }} className="container text-center">
-        <h2 className="serif-title" style={{ fontSize: '32px', marginBottom: '16px' }}>Creation Not Found</h2>
-        <p style={{ color: 'var(--warm-charcoal-muted)', marginBottom: '24px' }}>The handcrafted item you are looking for does not exist in our catalog.</p>
-        <Link to="/collections" className="btn-primary">Back to Collections</Link>
+        <h2 className="serif-title" style={{ fontSize: '32px', marginBottom: '16px' }}>{t('product.notFound')}</h2>
+        <p style={{ color: 'var(--warm-charcoal-muted)', marginBottom: '24px' }}>{t('product.notFoundSub')}</p>
+        <Link to="/collections" className="btn-primary">{t('product.backCollections')}</Link>
       </div>
     );
   }
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
-    toast.success(`Added ${quantity} x ${product.title} to cart!`);
+    toast.success(`${quantity} x ${product.title} ${t('product.addedToCart')}`);
   };
 
   const handleWishlistToggle = () => {
     setIsWishlisted(!isWishlisted);
     toast.success(
-      isWishlisted ? "Removed from your collector wishlist." : "Added to your collector wishlist!",
+      isWishlisted ? t('product.removedWishlist') : t('product.addedWishlist'),
       {
         icon: <FiHeart style={{ fill: isWishlisted ? 'none' : 'var(--primary-terracotta)', color: 'var(--primary-terracotta)' }} />
       }
@@ -68,7 +70,7 @@ const Product = () => {
     }
 
     addReview(product.id, newReviewRating, newReviewName, newReviewText);
-    toast.success("Thank you! Your verified collector review has been appended.");
+    toast.success(t('product.verifiedReview'));
     
     // Reset Form & Close
     setNewReviewRating(5);
@@ -87,7 +89,7 @@ const Product = () => {
       
       {/* BREADCRUMBS */}
       <div className="product-breadcrumbs">
-        <Link to="/">Home</Link> / <Link to="/collections">Collections</Link> / <span style={{ color: 'var(--primary-terracotta)', fontWeight: '600' }}>{product.title}</span>
+        <Link to="/">{t('product.home')}</Link> / <Link to="/collections">{t('product.collections')}</Link> / <span style={{ color: 'var(--primary-terracotta)', fontWeight: '600' }}>{product.title}</span>
       </div>
 
       {/* TOP SECTION (SPLIT MAIN HERO) */}
@@ -116,7 +118,7 @@ const Product = () => {
 
         {/* Right Column: Descriptions & Actions */}
         <div className="product-details-wrap">
-          <span className="product-origin-label">{product.subtitle || "HAND-THROWN • KUTCH"}</span>
+          <span className="product-origin-label">{product.subtitle || t('product.handMadeBhuj')}</span>
           <h1 className="product-main-title">{product.title}</h1>
           
           <div className="product-stars-row">
@@ -125,8 +127,8 @@ const Product = () => {
                 <FiStar key={i} style={{ fill: i < Math.floor(product.rating) ? 'var(--gold-accent)' : 'none' }} />
               ))}
             </span>
-            <strong>{product.rating} Rating</strong>
-            <span style={{ color: 'var(--warm-charcoal-muted)' }}>({productReviews.length} collector reviews)</span>
+            <strong>{product.rating} {t('product.rating')}</strong>
+            <span style={{ color: 'var(--warm-charcoal-muted)' }}>({productReviews.length} {t('product.collectorReviews')})</span>
           </div>
 
           <div className="product-price-tag">{formatPrice(product.price)}</div>
@@ -139,13 +141,13 @@ const Product = () => {
                 key={tag} 
                 className={tag === 'Eco-friendly' || tag === 'Sustainable' ? 'badge-eco' : 'badge-handmade'}
               >
-                {tag}
+                {tag === 'Eco-friendly' ? t('product.ecoFriendly') : tag === 'Sustainable' ? t('product.sustainable') : tag}
               </span>
             ))}
           </div>
 
           <span className="product-stock-banner">
-            <FiCheck /> {product.stockStatus}
+            <FiX style={{ display: 'none' }} /> {product.stockStatus}
           </span>
 
           <div className="product-actions-row">
@@ -172,7 +174,7 @@ const Product = () => {
               className="btn-primary" 
               style={{ flex: 1, padding: '16px', justifyContent: 'center' }}
             >
-              <FiShoppingCart size={18} /> Add to Cart • {formatPrice(product.price * quantity)}
+              <FiShoppingCart size={18} /> {t('product.addToCart')} • {formatPrice(product.price * quantity)}
             </button>
 
             {/* Wishlist toggle heart button */}
@@ -189,12 +191,10 @@ const Product = () => {
 
       </section>
 
-
-
       {/* CROSS-SELLS: RELATED SHELF */}
       {relatedProducts.length > 0 && (
         <section className="related-section">
-          <h3 className="serif-title" style={{ fontSize: '26px', marginBottom: '24px' }}>From the Same Collection</h3>
+          <h3 className="serif-title" style={{ fontSize: '26px', marginBottom: '24px' }}>{t('product.sameCollection')}</h3>
           <div className="curation-grid" style={{ gridTemplateColumns: `repeat(${relatedProducts.length}, 1fr)` }}>
             {relatedProducts.map(prod => (
               <Link to={`/product/${prod.id}`} key={prod.id} className="product-card-container">
@@ -227,7 +227,7 @@ const Product = () => {
 
       {/* REVIEWS & COLLECTOR FEEDBACK */}
       <section className="reviews-section">
-        <h3 className="serif-title" style={{ fontSize: '26px', marginBottom: '24px' }}>What our collectors say</h3>
+        <h3 className="serif-title" style={{ fontSize: '26px', marginBottom: '24px' }}>{t('product.whatCollectorsSay')}</h3>
         
         {/* Cumulative Rating Board */}
         <div className="reviews-dashboard">
@@ -239,29 +239,29 @@ const Product = () => {
                 <FiStar key={i} style={{ fill: i < Math.floor(product.rating) ? 'var(--gold-accent)' : 'none' }} />
               ))}
             </div>
-            <p style={{ fontSize: '14px', color: 'var(--warm-charcoal-muted)' }}>Based on {productReviews.length} reviews</p>
+            <p style={{ fontSize: '14px', color: 'var(--warm-charcoal-muted)' }}>{t('product.basedOn')} {productReviews.length} {t('product.collectorReviews')}</p>
             <button 
               onClick={() => setReviewModalOpen(true)}
               className="btn-primary" 
               style={{ marginTop: '16px', padding: '10px 20px', fontSize: '13px' }}
             >
-              Write a Review
+              {t('product.writeReview')}
             </button>
           </div>
 
           <div className="reviews-bars-list">
             <div className="review-bar-item">
-              <span>5 Star</span>
+              <span>{t('product.star5')}</span>
               <div className="bar-track"><div className="bar-fill" style={{ width: '85%' }}></div></div>
               <span>85%</span>
             </div>
             <div className="review-bar-item">
-              <span>4 Star</span>
+              <span>{t('product.star4')}</span>
               <div className="bar-track"><div className="bar-fill" style={{ width: '10%' }}></div></div>
               <span>10%</span>
             </div>
             <div className="review-bar-item">
-              <span>3 Star</span>
+              <span>{t('product.star3')}</span>
               <div className="bar-track"><div className="bar-fill" style={{ width: '5%' }}></div></div>
               <span>5%</span>
             </div>
@@ -273,7 +273,7 @@ const Product = () => {
         <div className="reviews-list-container">
           {productReviews.length === 0 ? (
             <p style={{ textAlign: 'center', color: 'var(--warm-charcoal-muted)', fontStyle: 'italic', padding: '24px' }}>
-              No collector reviews yet. Be the first to share your thoughts on this masterpiece!
+              {t('product.noReviewsYet')}
             </p>
           ) : (
             productReviews.map(review => (
@@ -303,18 +303,18 @@ const Product = () => {
       {reviewModalOpen && (
         <div className="story-modal-overlay" onClick={() => setReviewModalOpen(false)}>
           <div className="story-modal-card" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
-            <button className="story-modal-close" onClick={() => setReviewModalOpen(false)} title="Close Modal">
+            <button className="story-modal-close" onClick={() => setReviewModalOpen(false)} title={t('product.closeModal')}>
               <FiX />
             </button>
             <div className="story-modal-body">
-              <h2 className="serif-title" style={{ fontSize: '26px', marginBottom: '8px' }}>Write a Review</h2>
-              <p style={{ color: 'var(--warm-charcoal-muted)', fontSize: '13px', marginBottom: '16px' }}>Share your experience with this unique handcrafted masterpiece.</p>
+              <h2 className="serif-title" style={{ fontSize: '26px', marginBottom: '8px' }}>{t('product.writeReview')}</h2>
+              <p style={{ color: 'var(--warm-charcoal-muted)', fontSize: '13px', marginBottom: '16px' }}>{t('product.reviewPlaceholder')}</p>
               
               <form onSubmit={handleReviewSubmit}>
                 
                 {/* Rating Pick Row */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600' }}>Select Rating:</label>
+                  <label style={{ fontSize: '14px', fontWeight: '600' }}>{t('product.selectRating')}</label>
                   <div className="review-stars-picker">
                     {[1, 2, 3, 4, 5].map(idx => (
                       <FiStar 
@@ -328,7 +328,7 @@ const Product = () => {
 
                 {/* Name */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Your Name</label>
+                  <label style={{ fontSize: '14px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>{t('product.yourName')}</label>
                   <input 
                     type="text"
                     placeholder="e.g. Ananya Gupta"
@@ -341,7 +341,7 @@ const Product = () => {
 
                 {/* Text comment */}
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Collector Review</label>
+                  <label style={{ fontSize: '14px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>{t('product.collectorReviewText')}</label>
                   <textarea 
                     placeholder="Describe the texture, weight, detail, and packaging..."
                     value={newReviewText}
@@ -354,7 +354,7 @@ const Product = () => {
                 </div>
 
                 <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px', marginTop: '8px' }}>
-                  Submit Review
+                  {t('product.submitReview')}
                 </button>
 
               </form>
@@ -367,13 +367,13 @@ const Product = () => {
       {artisanModalOpen && artisan && (
         <div className="story-modal-overlay" onClick={() => setArtisanModalOpen(false)}>
           <div className="story-modal-card" onClick={(e) => e.stopPropagation()}>
-            <button className="story-modal-close" onClick={() => setArtisanModalOpen(false)} title="Close Modal">
+            <button className="story-modal-close" onClick={() => setArtisanModalOpen(false)} title={t('product.closeModal')}>
               <FiX />
             </button>
             <div className="story-modal-body">
               <h2 className="serif-title" style={{ fontSize: '32px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <FiInfo style={{ color: 'var(--gold-accent)' }} />
-                Story of {artisan.name}
+                {t('product.storyOf')} {artisan.name}
               </h2>
               
               <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginTop: '20px' }}>
@@ -383,7 +383,7 @@ const Product = () => {
                   style={{ width: '220px', height: '220px', objectFit: 'cover', borderRadius: '12px', border: '1px solid var(--gold-accent)' }}
                 />
                 <div style={{ flex: 1, minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '15px' }}>
-                  <p><strong>{artisan.role} • Bhuj, Kutch District</strong></p>
+                  <p><strong>{artisan.role} • {t('product.bhujKutch')}</strong></p>
                   <p>{artisan.story}</p>
                   <p style={{ fontStyle: 'italic', color: 'var(--primary-terracotta)' }}>
                     "The clay has its own language. When you hand-throw, you aren't just shaping dirt, you are capturing a breath of history."

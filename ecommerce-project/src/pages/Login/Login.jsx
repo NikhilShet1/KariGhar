@@ -6,11 +6,13 @@ import { FiCamera } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 import toast from 'react-hot-toast';
 import '../../styles/auth.css';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Login = () => {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { isLoggedIn, isLoading, login } = useAuth();
+  const { t } = useLanguage();
 
   // Mode
   const queryParams   = new URLSearchParams(location.search);
@@ -128,21 +130,21 @@ const Login = () => {
         <div className="auth-form-panel">
           <form onSubmit={handleSubmitForm}>
             <h2 className="auth-welcome-title">
-              {isSignup ? 'Create Account' : 'Welcome Back'}
+              {isSignup ? t('login.createAccount') : t('login.welcomeBack')}
             </h2>
             <p className="auth-welcome-sub">
-              {isSignup ? 'Join our marketplace to collect or sell.' : 'Welcome back to KariGhar.'}
+              {isSignup ? t('login.joinMarketplace') : t('login.welcomeBackSub')}
             </p>
 
             {/* Customer / Seller Toggle */}
             <div className="auth-role-toggle-pill">
               <button type="button" onClick={() => setRole('Customer')}
                 className={`auth-role-btn ${role === 'Customer' ? 'active' : 'inactive'}`}>
-                Customer
+                {t('login.customer')}
               </button>
               <button type="button" onClick={() => setRole('Seller')}
                 className={`auth-role-btn ${role === 'Seller' ? 'active' : 'inactive'}`}>
-                Seller Artisan
+                {t('login.sellerArtisan')}
               </button>
             </div>
 
@@ -153,7 +155,7 @@ const Login = () => {
                   {avatar ? <img src={avatar} alt="Avatar preview" /> : <FiCamera size={26} />}
                 </div>
                 <span className="photo-upload-text">
-                  {avatar ? 'Change Profile Photo' : 'Upload Profile Photo'}
+                  {avatar ? t('login.changeProfile') : t('login.uploadProfile')}
                 </span>
                 <input type="file" ref={fileInputRef} onChange={handleImageChange}
                   accept="image/*" style={{ display: 'none' }} />
@@ -163,8 +165,8 @@ const Login = () => {
             {/* Full Name (Signup only) */}
             {isSignup && (
               <div className="auth-input-group">
-                <label>Full Name</label>
-                <input type="text" placeholder="Enter your name" value={fullName}
+                <label>{t('login.fullName')}</label>
+                <input type="text" placeholder={t('login.enterName')} value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="auth-input-field" required />
               </div>
@@ -172,7 +174,7 @@ const Login = () => {
 
             {/* Email */}
             <div className="auth-input-group">
-              <label>Email Address</label>
+              <label>{t('login.emailAddress')}</label>
               <input type="email" placeholder="you@example.com" value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="auth-input-field" required />
@@ -180,7 +182,7 @@ const Login = () => {
 
             {/* Password */}
             <div className="auth-input-group">
-              <label>Password</label>
+              <label>{t('login.password')}</label>
               <input type="password" placeholder="••••••••" value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="auth-input-field" required />
@@ -189,7 +191,7 @@ const Login = () => {
             {/* Phone (Signup only) */}
             {isSignup && (
               <div className="auth-input-group">
-                <label>Phone Number</label>
+                <label>{t('login.phoneNumber')}</label>
                 <input type="tel" placeholder="e.g. 9876543210" value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="auth-input-field" required />
@@ -200,30 +202,30 @@ const Login = () => {
             <button type="submit" className="btn-primary" disabled={submitting}
               style={{ width: '100%', justifyContent: 'center', padding: '14px', marginTop: '10px', opacity: submitting ? 0.7 : 1 }}>
               {submitting
-                ? (isSignup ? 'Creating Account…' : 'Signing In…')
-                : (isSignup ? 'Create Account' : 'Log In')}
+                ? (isSignup ? t('login.creatingAccount') : t('login.signingIn'))
+                : (isSignup ? t('login.createAccount') : t('login.logIn'))}
             </button>
 
-            <div className="auth-divider-line">OR CONNECT WITH</div>
+            <div className="auth-divider-line">{t('login.orConnect')}</div>
 
             {/* Google (UI only — no Supabase OAuth yet) */}
             <button type="button" className="btn-google-signon"
               onClick={() => toast('Google sign-in coming soon!', { icon: '🚀' })}>
               <FcGoogle size={20} style={{ marginRight: '10px' }} />
-              Continue with Google
+              {t('login.continueGoogle')}
             </button>
 
             {/* Toggle Mode */}
             <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '13px', color: 'var(--warm-charcoal-muted)' }}>
               {isSignup ? (
-                <span>Already have an account?{' '}
+                <span>{t('login.alreadyHaveAccount')}{' '}
                   <button type="button" onClick={() => setIsSignup(false)}
-                    style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>Log In</button>
+                    style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>{t('login.logIn')}</button>
                 </span>
               ) : (
-                <span>Don't have an account?{' '}
+                <span>{t('login.dontHaveAccount')}{' '}
                   <button type="button" onClick={() => setIsSignup(true)}
-                    style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>Sign Up</button>
+                    style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>{t('login.signUp')}</button>
                 </span>
               )}
             </div>

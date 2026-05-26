@@ -6,12 +6,14 @@ import { formatPrice } from '../../utils/helpers';
 import { FiStar, FiShoppingCart, FiMessageCircle, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import '../../styles/categories.css';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Categories = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { products } = useProducts();
   const { addToCart } = useCart();
+  const { t } = useLanguage();
 
   // Parse query parameters
   const queryParams = new URLSearchParams(location.search);
@@ -118,8 +120,8 @@ const Categories = () => {
       {/* HEADER HERO */}
       <section className="collections-hero">
         <div className="container">
-          <span className="hero-badge-tag">Collector Catalog</span>
-          <h1 style={{ marginTop: '10px' }}>Curation of Craft</h1>
+          <span className="hero-badge-tag">{t('categories.badge')}</span>
+          <h1 style={{ marginTop: '10px' }}>{t('categories.title')}</h1>
         </div>
       </section>
 
@@ -132,18 +134,18 @@ const Categories = () => {
             
             {/* Title & Clear Action */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '18px' }}>Filters</h3>
+              <h3 style={{ fontSize: '18px' }}>{t('categories.filters')}</h3>
               <button 
                 onClick={resetFilters}
                 style={{ fontSize: '12px', fontWeight: '600', color: 'var(--primary-terracotta)', borderBottom: '1px solid var(--primary-terracotta)' }}
               >
-                Clear All
+                {t('categories.clearAll')}
               </button>
             </div>
 
             {/* Filter: Craft Type */}
             <div>
-              <h4 className="filter-group-title">Craft Type</h4>
+              <h4 className="filter-group-title">{t('categories.craftType')}</h4>
               <div className="filter-options-list">
                 {['Pottery & Ceramics', 'Hand-loom Textiles', 'Metalwork (Dhokra)', 'Wooden Carvings'].map(cat => (
                   <label key={cat} className="filter-checkbox-label">
@@ -160,7 +162,7 @@ const Categories = () => {
 
             {/* Filter: Price Range */}
             <div>
-              <h4 className="filter-group-title">Price Range</h4>
+              <h4 className="filter-group-title">{t('categories.priceRange')}</h4>
               <input 
                 type="range" 
                 min="500" 
@@ -172,13 +174,13 @@ const Categories = () => {
               />
               <div className="price-slider-info">
                 <span>₹500</span>
-                <span style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>Up to {formatPrice(maxPrice)}</span>
+                <span style={{ color: 'var(--primary-terracotta)', fontWeight: '700' }}>{t('categories.upTo')} {formatPrice(maxPrice)}</span>
               </div>
             </div>
 
             {/* Filter: Ratings */}
             <div>
-              <h4 className="filter-group-title">Minimum Rating</h4>
+              <h4 className="filter-group-title">{t('categories.minRating')}</h4>
               <div className="filter-options-list">
                 {[5, 4.5, 4].map(stars => (
                   <label key={stars} className="filter-checkbox-label" onClick={() => setSelectedRating(stars)}>
@@ -191,7 +193,7 @@ const Categories = () => {
                     />
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span style={{ display: 'inline-flex', color: 'var(--gold-accent)' }}><FiStar style={{ fill: 'var(--gold-accent)' }} /></span>
-                      <span>{stars} & up</span>
+                      <span>{stars}{t('categories.andUp')}</span>
                     </div>
                   </label>
                 ))}
@@ -203,20 +205,20 @@ const Categories = () => {
                     onChange={() => setSelectedRating(0)}
                     style={{ accentColor: 'var(--primary-terracotta)' }}
                   />
-                  <span>All Ratings</span>
+                  <span>{t('categories.allRatings')}</span>
                 </label>
               </div>
             </div>
 
             {/* Filter: Districts */}
             <div>
-              <h4 className="filter-group-title">District Origin</h4>
+              <h4 className="filter-group-title">{t('categories.districtOrigin')}</h4>
               <select 
                 value={selectedDistrict} 
                 onChange={(e) => setSelectedDistrict(e.target.value)}
                 className="district-select-custom"
               >
-                <option value="All">All Districts</option>
+                <option value="All">{t('categories.allDistricts')}</option>
                 <option value="Bhuj">Bhuj (Kutch)</option>
                 <option value="Varanasi">Varanasi</option>
                 <option value="Kashmir">Kashmir Valley</option>
@@ -234,13 +236,13 @@ const Categories = () => {
             {/* Listing Header */}
             <div className="grid-results-header">
               <div>
-                Showing <strong>{filteredProducts.length}</strong> results 
-                {searchFilter && <span> for "<strong>{searchFilter}</strong>"</span>}
+                {t('categories.showing')} <strong>{filteredProducts.length}</strong> {t('categories.results')} 
+                {searchFilter && <span> {t('categories.for')} "<strong>{searchFilter}</strong>"</span>}
               </div>
               
               {/* Sorting selectors */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontWeight: '500' }}>Sort by:</span>
+                <span style={{ fontWeight: '500' }}>{t('categories.sortBy')}</span>
                 <select 
                   value={sortBy} 
                   onChange={(e) => setSortBy(e.target.value)}
@@ -252,10 +254,10 @@ const Categories = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  <option value="recent">Most Recent</option>
-                  <option value="low-to-high">Price: Low to High</option>
-                  <option value="high-to-low">Price: High to Low</option>
-                  <option value="rating">Top Rated</option>
+                  <option value="recent">{t('categories.mostRecent')}</option>
+                  <option value="low-to-high">{t('categories.priceLowHigh')}</option>
+                  <option value="high-to-low">{t('categories.priceHighLow')}</option>
+                  <option value="rating">{t('categories.topRated')}</option>
                 </select>
               </div>
             </div>
@@ -269,9 +271,9 @@ const Categories = () => {
                 borderRadius: 'var(--border-radius-lg)',
                 border: '1px dashed var(--cream-border)'
               }}>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', marginBottom: '8px' }}>No matches found</p>
-                <p style={{ color: 'var(--warm-charcoal-muted)', fontSize: '14px', marginBottom: '24px' }}>Try loosening your filters, price limits, or search terms to find other creations.</p>
-                <button onClick={resetFilters} className="btn-primary">Reset Filters</button>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', marginBottom: '8px' }}>{t('categories.noMatches')}</p>
+                <p style={{ color: 'var(--warm-charcoal-muted)', fontSize: '14px', marginBottom: '24px' }}>{t('categories.noMatchesSub')}</p>
+                <button onClick={resetFilters} className="btn-primary">{t('categories.resetFilters')}</button>
               </div>
             ) : (
               <div className="products-listing-grid">
@@ -365,7 +367,7 @@ const Categories = () => {
       <div 
         onClick={() => { navigate('/help'); toast.success("Opening KariGhar Assistant Chatbot..."); }}
         className="floating-chat-trigger" 
-        title="Open KariGhar Assistant"
+        title={t('categories.openAssistant')}
       >
         <FiMessageCircle />
       </div>

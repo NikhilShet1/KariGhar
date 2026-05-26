@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { FiGlobe, FiBell, FiPlay, FiX } from 'react-icons/fi';
 import SellerLayout from './components/SellerLayout';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const OnboardingStep3 = () => {
   const navigate = useNavigate();
   const { login, isLoggedIn, user } = useAuth();
+  const { language, changeLanguage, t } = useLanguage();
 
   const [phone, setPhone] = useState('');
   const [state, setState] = useState('');
@@ -39,7 +41,7 @@ const OnboardingStep3 = () => {
 
   const handleVoiceInput = (text) => {
     const cleanText = text.toLowerCase();
-    if (cleanText.includes('aage') || cleanText.includes('next') || cleanText.includes('done') || cleanText.includes('complete')) {
+    if (cleanText.includes('aage') || cleanText.includes('next') || cleanText.includes('done') || cleanText.includes('complete') || cleanText.includes('ಮುಂದೆ')) {
       handleComplete();
     } else {
       // Simple parsing logic: match states or districts
@@ -94,11 +96,25 @@ const OnboardingStep3 = () => {
           KariGhar
         </span>
         <div className="flex items-center gap-6 text-[#1A1A1A]">
-          <button className="text-xl hover:text-[#8B3A1A]" title="Language Switcher">
-            <FiGlobe />
-          </button>
-          <button className="text-xl hover:text-[#8B3A1A]" title="Notifications">
+          {/* Language Selector Dropdown */}
+          <div className="flex items-center gap-1 bg-[#FDF8F4] border border-[#E5DCD0] rounded-xl px-2 py-1 shadow-sm">
+            <FiGlobe className="text-[#8B3A1A] w-4 h-4" />
+            <select
+              value={language}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="bg-transparent border-none text-xs font-bold text-[#1A1A1A] outline-none cursor-pointer p-0"
+              title={t('nav.languageSelect')}
+              style={{ appearance: 'none', WebkitAppearance: 'none' }}
+            >
+              <option value="en">EN</option>
+              <option value="hi">हिन्दी</option>
+              <option value="kn">ಕನ್ನಡ</option>
+            </select>
+          </div>
+
+          <button className="text-xl hover:text-[#8B3A1A] relative" title="Notifications">
             <FiBell />
+            <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-[#8B3A1A]"></span>
           </button>
         </div>
       </div>
@@ -117,10 +133,10 @@ const OnboardingStep3 = () => {
             </div>
 
             <h2 className="text-4xl md:text-5xl font-bold text-[#8B3A1A] karigar-serif">
-              Kahan se hain aap?
+              {t('sellerOnboarding.whereAreYouFrom')}
             </h2>
             <p className="text-lg text-[#666666] font-medium">
-              "Apna phone number aur jagah batayein"
+              {t('sellerOnboarding.enterPhoneLocation')}
             </p>
 
             {/* Input Card */}
@@ -134,13 +150,13 @@ const OnboardingStep3 = () => {
                   className="w-10 h-10 rounded-full object-cover border border-[#8B3A1A]"
                 />
                 <p className="text-sm text-[#1A1A1A] italic">
-                  "Apna phone number aur shehar chuniye taaki grahak aapko dhoond sakein."
+                  {t('sellerOnboarding.voiceGuidanceStep3')}
                 </p>
               </div>
 
               {/* Phone Number */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-[#8B3A1A]">Phone Number</label>
+                <label className="text-sm font-bold text-[#8B3A1A]">{t('sellerOnboarding.phoneNumberLabel')}</label>
                 <div className="flex items-center gap-0 rounded-2xl border border-[#E5DCD0] bg-white overflow-hidden" style={{ height: '56px' }}>
                   <span className="px-5 text-[#1A1A1A] font-bold text-sm bg-[#F5EDE3] h-full flex items-center border-r border-[#E5DCD0] shrink-0">+91</span>
                   <input 
@@ -158,21 +174,21 @@ const OnboardingStep3 = () => {
 
               {/* State Dropdown */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-[#8B3A1A]">Rajya (State)</label>
+                <label className="text-sm font-bold text-[#8B3A1A]">{t('sellerOnboarding.stateLabel')}</label>
                 <select 
                   value={state}
                   onChange={(e) => { setState(e.target.value); setDistrict(''); }}
                   className="karigar-input"
                   style={{ appearance: 'auto' }}
                 >
-                  <option value="">— Select State —</option>
+                  <option value="">{t('sellerOnboarding.selectState')}</option>
                   {states.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
 
               {/* District Dropdown */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-[#8B3A1A]">Zila (District)</label>
+                <label className="text-sm font-bold text-[#8B3A1A]">{t('sellerOnboarding.districtLabel')}</label>
                 <select 
                   value={district}
                   onChange={(e) => setDistrict(e.target.value)}
@@ -180,13 +196,13 @@ const OnboardingStep3 = () => {
                   style={{ appearance: 'auto' }}
                   disabled={!state}
                 >
-                  <option value="">— Select District —</option>
+                  <option value="">{t('sellerOnboarding.selectDistrict')}</option>
                   {state && districts[state].map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
               </div>
 
               <button type="submit" className="karigar-btn-primary px-12 self-start mt-2">
-                Aage Badhein &rarr;
+                {t('sellerOnboarding.aageBadhein')}
               </button>
 
             </form>
@@ -196,7 +212,7 @@ const OnboardingStep3 = () => {
           <div className="flex flex-col gap-2 mt-4">
             <div 
               onClick={() => setShowVideoModal(true)}
-              className="video-thumbnail-container relative w-full max-w-xs h-28 bg-[#E5DCD0] flex items-center justify-center border-2 border-white/80 rounded-2xl"
+              className="video-thumbnail-container relative w-full max-w-xs h-28 bg-[#E5DCD0] flex items-center justify-center border-2 border-white/80 rounded-2xl cursor-pointer"
             >
               <img 
                 src="/images/parvati-devi-weaver.png" 
@@ -207,7 +223,7 @@ const OnboardingStep3 = () => {
                 <FiPlay className="ml-1" />
               </div>
               <span className="absolute bottom-2 left-2 bg-[#1A1A1A]/80 text-white text-[10px] px-2.5 py-1 rounded-full font-bold">
-                CRAFT & CODE: EMPOWERING ARTISANS
+                {t('sellerOnboarding.empoweringArtisansTitle')}
               </span>
             </div>
           </div>
@@ -236,7 +252,7 @@ const OnboardingStep3 = () => {
             >
               <FiX />
             </button>
-            <h3 className="text-2xl font-bold text-[#8B3A1A] karigar-serif mb-4">CRAFT & CODE: EMPOWERING ARTISANS</h3>
+            <h3 className="text-2xl font-bold text-[#8B3A1A] karigar-serif mb-4">{t('sellerOnboarding.empoweringArtisansTitle')}</h3>
             <div className="aspect-video bg-black rounded-2xl overflow-hidden">
               <iframe 
                 className="w-full h-full"
