@@ -115,9 +115,7 @@ While Supabase provides direct client-to-database capabilities, a lightweight No
 1.  **Audio Conversion & Transcoding:**
     *   Artisans record voice notes directly from mobile browsers (typically yielding `.webm` or `.ogg` via the MediaRecorder API).
     *   A Node.js function using `fluent-ffmpeg` transcodes uploaded raw audio formats to standard `.mp3` or `.aac` to guarantee consistent playback compatibility across older Android/iOS devices.
-2.  **Auth - SMS OTP (Phone-based Login):**
-    *   Rural users often prefer passwordless phone logins.
-    *   Node.js acts as the integration handler for Supabase SMS Auth (using Twilio or Msg91) to request and verify One-Time Passwords (OTP).
+2.  **Auth - Name And Password**
 3.  **WhatsApp Link Generator Helper:**
     *   Dynamic generation of WhatsApp Click-to-Chat links.
     *   Escapes and structures pre-filled messages mapping to specific buyer languages:
